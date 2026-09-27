@@ -308,6 +308,7 @@ class _HabitsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = context.l10n;
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final AsyncValue<List<Habit>> habits = ref.watch(habitsProvider);
 
     return Padding(
@@ -344,7 +345,7 @@ class _HabitsCard extends ConsumerWidget {
                     (Habit habit) => CheckboxListTile(
                       contentPadding: EdgeInsets.zero,
                       value: habit.isDoneToday,
-                      title: Text(habit.name),
+                      title: Text(habit.displayName(languageCode)),
                       subtitle: habit.currentStreak > 0
                           ? Text(
                               l10n.t('habitsStreak', <String, Object?>{

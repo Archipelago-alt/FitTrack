@@ -65,6 +65,41 @@ does the deriving, and the adapter calls it on every request:
 Delete a workout and the volume comes back off the chart; log a meal and the
 rings move. Nothing keeps showing the seed after you change the data.
 
+## Languages
+
+The app runs fully in English and Arabic, with no server involved. Arabic lays
+out right-to-left; the language is chosen in Profile → Language and remembered
+across restarts (`system` follows the phone).
+
+What is translated, and where it comes from:
+
+| Layer | Source | Notes |
+|---|---|---|
+| Screen copy, buttons, errors | `apps/mobile/lib/l10n/app_en.arb`, `app_ar.arb` | Loaded at runtime; a missing key falls back to English rather than crashing. |
+| Exercise and food names | `name_ar` in the bundled data | All 80 exercises, all 60 foods. |
+| Muscle groups, equipment, difficulty, exercise type | `category_labels.dart` | Slugs (`resistance_band`) map to real translations, not title-cased English. |
+| Body measurement types | `data_labels.dart` | `left_thigh` reads "الفخذ الأيسر", not "Left Thigh". |
+| Programmes, their days and descriptions | `name_ar`, `description_ar` | Templates, the active programme, and every day inside them. |
+| Workout history names | `name_ar` on each session | A session started from a programme day stores both languages, so switching language later relabels old workouts correctly. |
+| Habits, goals, serving sizes | `name_ar`, `title_ar`, `label_ar` | "1 slice (40 g)" reads "شريحة واحدة (٤٠ غ)". |
+| Units beside a number | `data_labels.dart` | `kg` → كجم, `workouts` → تمارين. |
+| Set prescriptions | `data_labels.dart` | "3 sets" → "3 مجموعات"; "3 × 45s" → "3 × 45ث". Numerals stay as they are; the words around them change. |
+| Chart series and summaries | recomputed per request | "حجم التدريب", and the training summary sentence is generated in the reader's language. |
+| FitCoach replies, generated plans, refusals | demo adapter | Canned replies, the injury redirect, generated plan and day names, and every "not available offline" message exist in both languages. |
+
+Deliberately not translated: numbers and dates use the locale's own
+formatting but Latin digits, and anything the user typed themselves (a
+programme they renamed, a custom food, a note) stays exactly as they typed it
+in whichever language they typed it.
+
+Two guards keep this from rotting: `test/core/localization_test.dart` fails if
+a key exists in one language and not the other, if an Arabic value is still
+English, or if a widget hardcodes user-facing text; and
+`test/core/data_localization_test.dart` fails if any bundled name, description,
+habit, goal or serving label ships without its Arabic counterpart.
+`test/core/arabic_layout_test.dart` renders the longest Arabic strings and the
+bundled Arabic data at 320×480, 360×640 and 412×915 and fails on overflow.
+
 ## Simulated or unavailable
 
 | Feature | Status |

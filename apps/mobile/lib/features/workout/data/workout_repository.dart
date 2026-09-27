@@ -48,6 +48,7 @@ class WorkoutRepository {
         if (session.programId != null) 'program_id': session.programId,
         if (session.dayId != null) 'day_id': session.dayId,
         'name': session.name,
+        if (session.nameAr != null) 'name_ar': session.nameAr,
         'started_at': session.startedAt.toUtc().toIso8601String(),
         'client_uuid': session.localId,
         if (session.dayId == null)

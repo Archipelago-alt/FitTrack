@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -264,6 +265,19 @@ class _ChartCard extends StatelessWidget {
               series: data.series,
               valueFormatter: valueFormatter,
             ),
+            if (data.series.length > 1)
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.sm,
+                  left: AppSpacing.sm,
+                ),
+                child: ChartLegend(
+                  labels: data.series
+                      .map((ChartSeries item) =>
+                          context.l10n.series(item.key, item.label))
+                      .toList(),
+                ),
+              ),
             if (data.summary != null)
               Padding(
                 padding: const EdgeInsets.only(

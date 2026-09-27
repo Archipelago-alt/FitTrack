@@ -1,18 +1,31 @@
 import '../../../core/localization/localised_name.dart';
 
 class ServingOption {
-  const ServingOption({required this.label, required this.grams});
+  const ServingOption({
+    required this.label,
+    required this.grams,
+    this.labelAr,
+  });
 
   final String label;
   final double grams;
+  final String? labelAr;
+
+  /// Prefer the Arabic label when the UI is in Arabic and one exists.
+  String displayLabel(String languageCode) =>
+      languageCode == 'ar' && (labelAr?.isNotEmpty ?? false) ? labelAr! : label;
 
   factory ServingOption.fromJson(Map<String, dynamic> json) => ServingOption(
         label: json['label'] as String,
         grams: (json['grams'] as num).toDouble(),
+        labelAr: json['label_ar'] as String?,
       );
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'label': label, 'grams': grams};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'label': label,
+        'grams': grams,
+        'label_ar': labelAr,
+      };
 }
 
 /// A catalogue or custom food. Nutrients are always per 100 g.

@@ -380,6 +380,7 @@ class WorkoutSession {
     required this.name,
     required this.status,
     required this.startedAt,
+    this.nameAr,
     this.id,
     this.programId,
     this.dayId,
@@ -404,6 +405,7 @@ class WorkoutSession {
   final String name;
   final String status;
   final DateTime startedAt;
+  final String? nameAr;
   final String? id;
   final String? programId;
   final String? dayId;
@@ -423,6 +425,10 @@ class WorkoutSession {
 
   /// True while the session exists only on this device.
   final bool isLocalOnly;
+
+  /// Prefer the Arabic name when the UI is in Arabic and one exists.
+  String displayName(String languageCode) =>
+      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
 
   bool get isInProgress => status == 'in_progress';
 
@@ -450,6 +456,7 @@ class WorkoutSession {
   WorkoutSession copyWith({
     String? id,
     String? name,
+    String? nameAr,
     String? status,
     DateTime? completedAt,
     int? durationSeconds,
@@ -469,6 +476,7 @@ class WorkoutSession {
         name: name ?? this.name,
         status: status ?? this.status,
         startedAt: startedAt,
+        nameAr: nameAr ?? this.nameAr,
         id: id ?? this.id,
         programId: programId,
         dayId: dayId,
@@ -494,6 +502,7 @@ class WorkoutSession {
             json['id'] as String? ??
             '',
         name: json['name'] as String? ?? 'Workout',
+        nameAr: json['name_ar'] as String?,
         status: json['status'] as String? ?? 'in_progress',
         startedAt: DateTime.tryParse('${json['started_at']}')?.toLocal() ??
             DateTime.now(),
@@ -530,6 +539,7 @@ class WorkoutSession {
         'id': id,
         'client_uuid': localId,
         'name': name,
+        'name_ar': nameAr,
         'status': status,
         'started_at': startedAt.toUtc().toIso8601String(),
         'program_id': programId,
@@ -559,6 +569,7 @@ class WorkoutSession {
         if (programId != null) 'program_id': programId,
         if (dayId != null) 'day_id': dayId,
         'name': name,
+        if (nameAr != null) 'name_ar': nameAr,
         'started_at': startedAt.toUtc().toIso8601String(),
         'finished': true,
         if (completedAt != null)

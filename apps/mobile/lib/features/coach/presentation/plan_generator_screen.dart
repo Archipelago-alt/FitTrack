@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -232,6 +233,7 @@ class _PlanPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -267,7 +269,13 @@ class _PlanPreview extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            item.prescription.label,
+                            l10n.prescription(
+                              sets: item.prescription.sets,
+                              repsMin: item.prescription.repsMin,
+                              repsMax: item.prescription.repsMax,
+                              durationSeconds:
+                                  item.prescription.durationSeconds,
+                            ),
                             style: theme.textTheme.labelSmall
                                 ?.copyWith(color: context.fitColors.textMuted),
                           ),

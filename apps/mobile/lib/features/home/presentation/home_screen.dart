@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -349,11 +350,12 @@ class _DashboardBody extends ConsumerWidget {
                   ),
                   child: FitCard(
                     child: ProgressBarRow(
-                      label: goal.title,
+                      label: goal.displayTitle(locale),
                       value: goal.fraction,
                       trailing:
                           '${goal.currentValue?.toStringAsFixed(1) ?? '—'} / '
-                          '${goal.targetValue.toStringAsFixed(1)} ${goal.unit}',
+                          '${goal.targetValue.toStringAsFixed(1)} '
+                          '${l10n.unit(goal.unit)}',
                     ),
                   ),
                 ),
@@ -373,6 +375,7 @@ class _TodayCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = context.l10n;
     final ThemeData theme = Theme.of(context);
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final WorkoutSession? active = ref.watch(activeWorkoutProvider).session;
 
     if (active != null) {
@@ -461,12 +464,16 @@ class _TodayCard extends ConsumerWidget {
         children: <Widget>[
           Text(l10n.t('homeTodaysWorkout'), style: theme.textTheme.bodySmall),
           const SizedBox(height: AppSpacing.xs),
-          Text(today.dayName, style: theme.textTheme.headlineSmall),
+          Text(today.displayDayName(languageCode),
+              style: theme.textTheme.headlineSmall),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            '${today.programName} · ${today.exerciseCount} '
+            '${today.displayProgramName(languageCode)} · '
+            '${today.exerciseCount} '
             '${l10n.t('exercisesTitle').toLowerCase()}'
-            '${today.estimatedMinutes != null ? ' · ~${today.estimatedMinutes} min' : ''}',
+            '${today.estimatedMinutes != null ? ' · ~${l10n.t('minutesShort', <String, Object?>{
+                    'count': today.estimatedMinutes
+                  })}' : ''}',
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: AppSpacing.lg),

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -85,6 +88,62 @@ void main() {
               'Arabic body text overflowed at ${size.width}x${size.height}');
     });
 
+    testWidgets('longest bundled Arabic data fits at ${size.width.toInt()}px',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      // Programme descriptions are the longest Arabic the data carries, and
+      // they are shown in a card two lines deep, exactly as here.
+      final List<String> longest = _bundledArabic()
+        ..sort((String a, String b) => b.length.compareTo(a.length));
+
+      await tester.pumpWidget(_wrap(
+        ListView(
+          children: <Widget>[
+            for (final String s in longest.take(8))
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(s, maxLines: 2, overflow: TextOverflow.ellipsis),
+                ),
+              ),
+          ],
+        ),
+        const Locale('ar'),
+        size,
+      ));
+      await tester.pumpAndSettle();
+      expect(_overflowed(tester), isFalse,
+          reason: 'bundled Arabic data overflowed at ${size.width}');
+    });
+
+    testWidgets('serving-size chips fit in a row at ${size.width.toInt()}px',
+        (WidgetTester tester) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      // The food sheet lays every serving option out in a Wrap.
+      final List<String> labels = _bundledServingLabels()
+        ..sort((String a, String b) => b.length.compareTo(a.length));
+
+      await tester.pumpWidget(_wrap(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: <Widget>[
+            for (final String label in labels.take(6))
+              ActionChip(label: Text(label), onPressed: () {}),
+          ],
+        ),
+        const Locale('ar'),
+        size,
+      ));
+      await tester.pumpAndSettle();
+      expect(_overflowed(tester), isFalse,
+          reason: 'serving chips overflowed at ${size.width}');
+    });
+
     testWidgets('category chips fit in a row at ${size.width.toInt()}px',
         (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(size);
@@ -142,4 +201,52 @@ void main() {
     expect(Directionality.of(ctx), TextDirection.rtl);
     expect(_overflowed(tester), isFalse);
   });
+}
+
+/// Every Arabic name and description the bundled data carries.
+List<String> _bundledArabic() {
+  final Map<String, dynamic> seed =
+      jsonDecode(File('assets/demo/seed.json').readAsStringSync())
+          as Map<String, dynamic>;
+  final List<String> out = <String>[];
+  void collect(dynamic value) {
+    if (value is List) {
+      for (final dynamic item in value) {
+        collect(item);
+      }
+      return;
+    }
+    if (value is Map) {
+      for (final dynamic entry in value.entries) {
+        final MapEntry<dynamic, dynamic> e =
+            entry as MapEntry<dynamic, dynamic>;
+        if ('${e.key}'.endsWith('_ar') && e.value is String) {
+          final String text = e.value as String;
+          if (text.isNotEmpty) out.add(text);
+        } else {
+          collect(e.value);
+        }
+      }
+    }
+  }
+
+  collect(seed);
+  return out;
+}
+
+/// The Arabic serving labels, which the food sheet shows as chips.
+List<String> _bundledServingLabels() {
+  final Map<String, dynamic> seed =
+      jsonDecode(File('assets/demo/seed.json').readAsStringSync())
+          as Map<String, dynamic>;
+  final List<dynamic> foods =
+      (seed['foods'] as Map<dynamic, dynamic>)['items'] as List<dynamic>;
+  return <String>[
+    for (final dynamic food in foods)
+      for (final dynamic option in (food
+              as Map<dynamic, dynamic>)['serving_options'] as List<dynamic>? ??
+          const <dynamic>[])
+        if ((option as Map<dynamic, dynamic>)['label_ar'] is String)
+          option['label_ar'] as String,
+  ];
 }

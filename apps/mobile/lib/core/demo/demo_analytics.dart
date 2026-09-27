@@ -592,8 +592,10 @@ class DemoAnalytics {
     return <String, dynamic>{
       'program_id': active['id'],
       'program_name': active['name'],
+      'program_name_ar': active['name_ar'],
       'day_id': pick['id'],
       'day_name': pick['name'],
+      'day_name_ar': pick['name_ar'],
       'exercise_count': exercises.length,
       'estimated_minutes': pick['estimated_minutes'] ?? 60,
       'is_rest_day': pick['is_rest_day'] ?? false,
@@ -772,9 +774,14 @@ class DemoAnalytics {
       'volume_by_muscle_group': groups,
       'personal_records': records,
       'summary': sessions.isEmpty
-          ? 'No workouts logged in this period.'
-          : '${sessions.length} workouts, ${_round1(volume).toStringAsFixed(0)} kg lifted '
-              'and $records personal records in this period.',
+          ? (isArabic
+              ? 'لا توجد تمارين مسجّلة في هذه الفترة.'
+              : 'No workouts logged in this period.')
+          : (isArabic
+              ? '${sessions.length} تمارين، و${_round1(volume).toStringAsFixed(0)} كجم '
+                  'مرفوعة، و$records أرقام شخصية في هذه الفترة.'
+              : '${sessions.length} workouts, ${_round1(volume).toStringAsFixed(0)} kg lifted '
+                  'and $records personal records in this period.'),
     };
   }
 
@@ -892,7 +899,9 @@ class DemoAnalytics {
       'points': points,
       'best_1rm_kg': best1rm,
       'change_percent': changePct,
-      'summary': '${points.length} sessions in this period.',
+      'summary': isArabic
+          ? '${points.length} حصص في هذه الفترة.'
+          : '${points.length} sessions in this period.',
     };
   }
 }

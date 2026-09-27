@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/providers.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/formatters.dart';
@@ -124,11 +125,7 @@ class _MeasurementsScreenState extends ConsumerState<MeasurementsScreen> {
     );
   }
 
-  String _label(String value) => value
-      .split('_')
-      .map((String part) =>
-          part.isEmpty ? part : part[0].toUpperCase() + part.substring(1))
-      .join(' ');
+  String _label(String value) => context.l10n.measurement(value);
 
   Future<void> _showEntrySheet(bool imperial) async {
     final AppLocalizations l10n = context.l10n;

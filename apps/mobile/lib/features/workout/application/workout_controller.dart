@@ -99,6 +99,10 @@ class ActiveWorkoutController extends StateNotifier<ActiveWorkoutState> {
     return '$prefix-${DateTime.now().microsecondsSinceEpoch}-$random';
   }
 
+  /// The name an ad-hoc workout gets when the user did not pick a program day.
+  static const String _adHocName = 'Quick workout';
+  static const String _adHocNameAr = 'تمرين سريع';
+
   /// Start a workout from a program day, or ad hoc when [day] is null.
   Future<WorkoutSession?> start({
     Program? program,
@@ -151,7 +155,11 @@ class ActiveWorkoutController extends StateNotifier<ActiveWorkoutState> {
 
     WorkoutSession session = WorkoutSession(
       localId: localId,
-      name: name ?? day?.name ?? 'Quick workout',
+      // Both languages are stored, so the session reads correctly later
+      // whichever language the app is in — the name is written once, and the
+      // user can switch language afterwards.
+      name: name ?? day?.name ?? _adHocName,
+      nameAr: name != null ? null : (day?.nameAr ?? _adHocNameAr),
       status: 'in_progress',
       startedAt: DateTime.now(),
       programId: program?.id,
