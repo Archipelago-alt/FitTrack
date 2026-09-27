@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/localised_name.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/units.dart';
 import '../../application/rest_timer_controller.dart';
@@ -52,7 +53,13 @@ class RestTimerBar extends ConsumerWidget {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    timer.exerciseName ?? l10n.t('workoutRestTimer'),
+                    timer.exerciseName == null
+                        ? l10n.t('workoutRestTimer')
+                        : localisedName(
+                            Localizations.localeOf(context).languageCode,
+                            timer.exerciseName!,
+                            timer.exerciseNameAr,
+                          ),
                     style: theme.textTheme.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

@@ -16,6 +16,7 @@ class RestTimerState {
     this.totalSeconds = 0,
     this.remainingSeconds = 0,
     this.exerciseName,
+    this.exerciseNameAr,
     this.isPaused = false,
   });
 
@@ -23,6 +24,14 @@ class RestTimerState {
   final int totalSeconds;
   final int remainingSeconds;
   final String? exerciseName;
+
+  /// The Arabic name, when the exercise has one.
+  ///
+  /// Both names are carried rather than one resolved string: the controller
+  /// that starts the timer has no locale, and the bar that shows it does, so
+  /// the choice is made there and follows a language change.
+  final String? exerciseNameAr;
+
   final bool isPaused;
 
   bool get isActive => isRunning || isPaused;
@@ -38,6 +47,7 @@ class RestTimerState {
     int? totalSeconds,
     int? remainingSeconds,
     String? exerciseName,
+    String? exerciseNameAr,
     bool? isPaused,
   }) =>
       RestTimerState(
@@ -45,6 +55,7 @@ class RestTimerState {
         totalSeconds: totalSeconds ?? this.totalSeconds,
         remainingSeconds: remainingSeconds ?? this.remainingSeconds,
         exerciseName: exerciseName ?? this.exerciseName,
+        exerciseNameAr: exerciseNameAr ?? this.exerciseNameAr,
         isPaused: isPaused ?? this.isPaused,
       );
 }
@@ -59,7 +70,7 @@ class RestTimerController extends StateNotifier<RestTimerState> {
   /// Fires once when the countdown reaches zero.
   VoidCallback? onFinished;
 
-  void start(int seconds, {String? exerciseName}) {
+  void start(int seconds, {String? exerciseName, String? exerciseNameAr}) {
     if (seconds <= 0) return;
     _endsAt = DateTime.now().add(Duration(seconds: seconds));
     state = RestTimerState(
@@ -67,6 +78,7 @@ class RestTimerController extends StateNotifier<RestTimerState> {
       totalSeconds: seconds,
       remainingSeconds: seconds,
       exerciseName: exerciseName,
+      exerciseNameAr: exerciseNameAr,
     );
     _startTicker();
   }

@@ -1,3 +1,5 @@
+import '../../../core/localization/localised_name.dart';
+
 /// Paging envelope, re-exported so callers that work with exercise lists
 /// need only one import.
 export '../../../core/models/paged_result.dart';
@@ -42,7 +44,7 @@ class Exercise {
 
   /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   bool get tracksWeight =>
       trackingType == 'weight_reps' || trackingType == 'assisted_weight';

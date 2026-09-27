@@ -22,10 +22,11 @@ import 'demo_store.dart';
 class DemoApiAdapter implements HttpClientAdapter {
   DemoApiAdapter(this._store, {String Function()? localeCode})
       : _localeCode = localeCode ?? _defaultLocale,
+        // The same closure, not a flag read from it: a captured value would
+        // freeze the language at the moment the adapter was built.
         _derived = DemoAnalytics(
           _store,
-          isArabic:
-              (localeCode ?? _defaultLocale)().toLowerCase().startsWith('ar'),
+          localeCode: localeCode ?? _defaultLocale,
         );
 
   /// Which language the canned coach replies answer in. Supplied by the app

@@ -1,3 +1,5 @@
+import '../../../core/localization/localised_name.dart';
+
 class ServingOption {
   const ServingOption({required this.label, required this.grams});
 
@@ -49,8 +51,9 @@ class Food {
   final bool isVerified;
   final bool isFavorite;
 
+  /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   /// Calories for a given portion.
   double caloriesFor(double grams) => caloriesPer100g * grams / 100;
