@@ -189,11 +189,29 @@ jobs:
 
       # Matches the JDK the release workflow builds with, so a Gradle or AGP
       # problem shows up here rather than during a release run.
+      #
+      # No `cache: gradle` here: that looks for Gradle files the moment this
+      # action runs, and android/ does not exist yet — bootstrap_platforms.sh
+      # generates it further down — so the action fails the job outright. The
+      # dependency cache is handled below instead.
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
+
+      # Keyed on what actually determines the plugin set: the resolved Dart
+      # dependencies, and the bootstrap script that pins the Gradle wrapper and
+      # AGP versions. Keying on the generated Gradle files is not possible,
+      # since they do not exist until after this step.
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('apps/mobile/pubspec.lock', 'apps/mobile/tool/bootstrap_platforms.sh') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - uses: subosito/flutter-action@v2
         with:
