@@ -273,7 +273,11 @@ class ActiveWorkoutController extends StateNotifier<ActiveWorkoutState> {
     if (!item.isWarmUpSet(setLocalId)) {
       _ref.read(restTimerProvider.notifier).start(
             item.restSeconds,
+            // Both names travel to the timer; the bar picks by locale, since
+            // resolving here would need a locale this controller has no
+            // business reading.
             exerciseName: item.exercise.name,
+            exerciseNameAr: item.exercise.nameAr,
           );
     }
   }

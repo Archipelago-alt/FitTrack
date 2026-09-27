@@ -12,13 +12,72 @@ import 'demo_store.dart';
 /// logged meal move the calorie ring, instead of the screens continuing to
 /// show whatever the capture happened to contain.
 class DemoAnalytics {
-  const DemoAnalytics(this._store, {this.isArabic = false});
+  DemoAnalytics(this._store, {String Function()? localeCode})
+      : _localeCode = localeCode ?? _defaultLocale;
 
   final DemoStore _store;
 
-  /// Meal items carry a denormalised food name, so it has to be stored in the
-  /// language the reader will see it in.
-  final bool isArabic;
+  /// The reader's language, read on every use rather than captured once.
+  ///
+  /// The provider that builds the demo adapter does not rebuild when the locale
+  /// changes, so a captured flag would stay on whichever language was current
+  /// when the adapter was built and keep resolving names into it after a
+  /// switch. Sharing this closure with [DemoApiAdapter] keeps the two agreeing.
+  final String Function() _localeCode;
+
+  static String _defaultLocale() => 'en';
+
+  bool get _isArabic => _localeCode().toLowerCase().startsWith('ar');
+
+  /// A food's name in the reader's language.
+  ///
+  /// The catalogue wins over [stored]. A meal item carries a denormalised
+  /// `food_name` fixed at the moment it was logged, so trusting that would pin
+  /// the name to the language in use back then and leave a meal logged in
+  /// English reading English after a switch to Arabic. [stored] is the fallback
+  /// for a food the catalogue no longer has — a custom entry, or one removed
+  /// since it was logged.
+  String _foodName(Map<String, dynamic> food, Object? stored) {
+    final Object? fromCatalogue =
+        _isArabic ? (food['name_ar'] ?? food['name']) : food['name'];
+    final Object? name = fromCatalogue ?? stored;
+    return name == null ? 'Food' : '$name';
+  }
+
+  /// The catalogue entry for a stored item's `food_id`, or an empty map.
+  Map<String, dynamic> _foodFor(
+    Map<String, dynamic> item,
+    List<Map<String, dynamic>> foods,
+  ) {
+    final String? foodId = item['food_id'] as String?;
+    if (foodId == null) return <String, dynamic>{};
+    return foods.firstWhere((Map<String, dynamic> f) => f['id'] == foodId,
+        orElse: () => <String, dynamic>{});
+  }
+
+  /// Re-resolve the denormalised `food_name` on every stored meal item.
+  ///
+  /// Stored days keep the name that was current when each item was logged, so
+  /// without this a day logged in one language keeps reading in it forever.
+  /// Only the name changes: portions and macros are returned exactly as stored,
+  /// and the copies made here mean nothing is written back.
+  List<dynamic> _mealsWithCurrentNames(dynamic meals) {
+    final List<Map<String, dynamic>> foods = _store.list('foods');
+    final List<dynamic> out = <dynamic>[];
+    for (final dynamic rawMeal in meals as List<dynamic>? ?? <dynamic>[]) {
+      final Map<String, dynamic> meal = _asMap(rawMeal);
+      final List<dynamic> items = <dynamic>[];
+      for (final dynamic rawItem
+          in meal['items'] as List<dynamic>? ?? <dynamic>[]) {
+        final Map<String, dynamic> item = _asMap(rawItem);
+        item['food_name'] = _foodName(_foodFor(item, foods), item['food_name']);
+        items.add(item);
+      }
+      meal['items'] = items;
+      out.add(meal);
+    }
+    return out;
+  }
 
   // --- shared helpers ------------------------------------------------------
 
@@ -334,8 +393,7 @@ class DemoAnalytics {
         'id':
             '${item['id'] ?? 'demo-item-$i-${DateTime.now().microsecondsSinceEpoch}'}',
         'food_id': foodId,
-        'food_name':
-            '${item['food_name'] ?? (isArabic ? (food['name_ar'] ?? food['name']) : food['name']) ?? 'Food'}',
+        'food_name': _foodName(food, item['food_name']),
         'grams': grams,
         // An item that already carries its own macros keeps them; otherwise
         // they come from the food, scaled to the portion.
@@ -427,7 +485,7 @@ class DemoAnalytics {
         ring(water.toDouble(), (targets['water_ml'] as num?)?.toDouble());
     out['water_raw_ml'] = water;
     out['logged_on'] = day['logged_on'] ?? today();
-    out['meals'] = day['meals'] ?? <dynamic>[];
+    out['meals'] = _mealsWithCurrentNames(day['meals']);
     return out;
   }
 
