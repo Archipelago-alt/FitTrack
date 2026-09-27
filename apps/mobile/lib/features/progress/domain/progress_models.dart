@@ -1,3 +1,4 @@
+import '../../../core/localization/localised_name.dart';
 import '../../exercises/domain/exercise.dart';
 import '../../goals/domain/goal.dart';
 import '../../workout/domain/workout_models.dart';
@@ -390,15 +391,11 @@ class TodayWorkout {
 
   /// Prefer the Arabic program name when the UI is in Arabic and one exists.
   String displayProgramName(String languageCode) =>
-      languageCode == 'ar' && (programNameAr?.isNotEmpty ?? false)
-          ? programNameAr!
-          : programName;
+      localisedName(languageCode, programName, programNameAr);
 
   /// Prefer the Arabic day name when the UI is in Arabic and one exists.
   String displayDayName(String languageCode) =>
-      languageCode == 'ar' && (dayNameAr?.isNotEmpty ?? false)
-          ? dayNameAr!
-          : dayName;
+      localisedName(languageCode, dayName, dayNameAr);
 
   factory TodayWorkout.fromJson(Map<String, dynamic> json) => TodayWorkout(
         programId: json['program_id'] as String,

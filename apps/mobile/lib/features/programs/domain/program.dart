@@ -1,3 +1,4 @@
+import '../../../core/localization/localised_name.dart';
 import '../../exercises/domain/exercise.dart';
 
 /// A prescribed exercise inside a program day.
@@ -114,7 +115,7 @@ class ProgramDay {
 
   /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   factory ProgramDay.fromJson(Map<String, dynamic> json) => ProgramDay(
         id: json['id'] as String,
@@ -185,13 +186,12 @@ class Program {
 
   /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   /// Prefer the Arabic description when the UI is in Arabic and one exists.
-  String? displayDescription(String languageCode) =>
-      languageCode == 'ar' && (descriptionAr?.isNotEmpty ?? false)
-          ? descriptionAr
-          : description;
+  String? displayDescription(String languageCode) => description == null
+      ? descriptionAr
+      : localisedName(languageCode, description!, descriptionAr);
 
   bool get isActive => status == 'active';
 

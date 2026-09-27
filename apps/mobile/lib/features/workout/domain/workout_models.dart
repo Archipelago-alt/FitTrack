@@ -1,3 +1,4 @@
+import '../../../core/localization/localised_name.dart';
 import '../../exercises/domain/exercise.dart';
 
 /// One logged set.
@@ -428,7 +429,7 @@ class WorkoutSession {
 
   /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   bool get isInProgress => status == 'in_progress';
 

@@ -774,10 +774,10 @@ class DemoAnalytics {
       'volume_by_muscle_group': groups,
       'personal_records': records,
       'summary': sessions.isEmpty
-          ? (isArabic
+          ? (_isArabic
               ? 'لا توجد تمارين مسجّلة في هذه الفترة.'
               : 'No workouts logged in this period.')
-          : (isArabic
+          : (_isArabic
               ? '${sessions.length} تمارين، و${_round1(volume).toStringAsFixed(0)} كجم '
                   'مرفوعة، و$records أرقام شخصية في هذه الفترة.'
               : '${sessions.length} workouts, ${_round1(volume).toStringAsFixed(0)} kg lifted '
@@ -899,7 +899,7 @@ class DemoAnalytics {
       'points': points,
       'best_1rm_kg': best1rm,
       'change_percent': changePct,
-      'summary': isArabic
+      'summary': _isArabic
           ? '${points.length} حصص في هذه الفترة.'
           : '${points.length} sessions in this period.',
     };

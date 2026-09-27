@@ -13,7 +13,7 @@ class ServingOption {
 
   /// Prefer the Arabic label when the UI is in Arabic and one exists.
   String displayLabel(String languageCode) =>
-      languageCode == 'ar' && (labelAr?.isNotEmpty ?? false) ? labelAr! : label;
+      localisedName(languageCode, label, labelAr);
 
   factory ServingOption.fromJson(Map<String, dynamic> json) => ServingOption(
         label: json['label'] as String,

@@ -1,3 +1,5 @@
+import '../../../core/localization/localised_name.dart';
+
 class Goal {
   const Goal({
     required this.id,
@@ -43,7 +45,7 @@ class Goal {
 
   /// Prefer the Arabic title when the UI is in Arabic and one exists.
   String displayTitle(String languageCode) =>
-      languageCode == 'ar' && (titleAr?.isNotEmpty ?? false) ? titleAr! : title;
+      localisedName(languageCode, title, titleAr);
 
   bool get isAchieved => status == 'achieved';
 

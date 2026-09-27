@@ -14,11 +14,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// The data half of the translation work.
 ///
-/// UI copy lives in the ARB files and is guarded by localization_test. The
-/// names the user reads most — their programs, days, workouts, habits, goals
-/// and serving sizes — arrive from the bundled data instead, so they need
-/// their own guard: one for the data carrying an Arabic field at all, and one
-/// for the models and labels actually preferring it.
+/// UI copy lives in the ARB files and is guarded by localization_test, and the
+/// exercise and food names by bilingual_data_test. Everything else the user
+/// reads as data — their programs, days, workouts, habits, goals and serving
+/// sizes — is covered here: one guard for the data carrying an Arabic field at
+/// all, and one for the models and labels actually preferring it.
 void main() {
   group('bundled data', () {
     late Map<String, dynamic> seed;
@@ -64,11 +64,6 @@ void main() {
       expect(missing, isEmpty,
           reason: 'bundled data with no Arabic:\n${missing.join('\n')}');
     }
-
-    test('exercise and food names are bilingual', () {
-      expectArabic('exercise', listOf(seed['exercises']), <String>['name']);
-      expectArabic('food', listOf(seed['foods']), <String>['name']);
-    });
 
     test('programs, their days and their descriptions are bilingual', () {
       final List<Map<String, dynamic>> programs = <Map<String, dynamic>>[

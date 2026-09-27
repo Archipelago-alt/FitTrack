@@ -1,3 +1,5 @@
+import '../../../core/localization/localised_name.dart';
+
 class HabitLog {
   const HabitLog({
     required this.id,
@@ -75,7 +77,7 @@ class Habit {
 
   /// Prefer the Arabic name when the UI is in Arabic and one exists.
   String displayName(String languageCode) =>
-      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+      localisedName(languageCode, name, nameAr);
 
   bool get isDoneToday => today?.isCompleted ?? false;
 
