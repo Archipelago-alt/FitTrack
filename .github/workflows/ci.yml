@@ -264,7 +264,7 @@ jobs:
           if [ -n "$SIGNER" ] && [ -x "$SIGNER" ]; then
             echo "  using $SIGNER"
             "$SIGNER" verify --verbose --print-certs "$APK" 2>&1 \
-              | grep -E 'Signer #1 (certificate|key)|Verifies|Verified using|Error|Exception' \
+              | grep -E 'Signer|Verifies|Verified using|Error|Exception' \
               || echo "  apksigner ran but reported nothing recognisable"
           else
             echo "  no apksigner under $ANDROID_HOME/build-tools, so the signer is unreported"
