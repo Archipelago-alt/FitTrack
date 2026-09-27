@@ -5,6 +5,11 @@
       "count": {}
     }
   },
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "@goalsDaysLeft": {
     "placeholders": {
       "count": {}
@@ -65,6 +70,16 @@
     "placeholders": {
       "current": {},
       "total": {}
+    }
+  },
+  "@prescriptionSeconds": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@prescriptionSets": {
+    "placeholders": {
+      "count": {}
     }
   },
   "@profileVersion": {
@@ -201,6 +216,7 @@
   "errorServer": "يواجه فيت تراك مشكلة حالياً. يرجى المحاولة بعد قليل.",
   "errorTimeout": "استغرق ذلك وقتاً طويلاً. يرجى المحاولة مرة أخرى.",
   "errorUnauthorized": "يرجى تسجيل الدخول للمتابعة.",
+  "exerciseCount": "{count} تمارين",
   "exercisesDifficulty": "المستوى",
   "exercisesEquipment": "المعدات",
   "exercisesFilters": "عوامل التصفية",
@@ -269,6 +285,18 @@
   "locationHome": "المنزل",
   "locationMixed": "مختلط",
   "locationOutdoor": "في الخارج",
+  "measureBodyFat": "نسبة الدهون",
+  "measureChest": "محيط الصدر",
+  "measureHips": "محيط الورك",
+  "measureLeftArm": "الذراع اليسرى",
+  "measureLeftCalf": "السمانة اليسرى",
+  "measureLeftThigh": "الفخذ الأيسر",
+  "measureNeck": "محيط الرقبة",
+  "measureRightArm": "الذراع اليمنى",
+  "measureRightCalf": "السمانة اليمنى",
+  "measureRightThigh": "الفخذ الأيمن",
+  "measureShoulders": "محيط الكتفين",
+  "measureWaist": "محيط الخصر",
   "minutesShort": "{count} دقيقة",
   "navHome": "الرئيسية",
   "navNutrition": "التغذية",
@@ -319,6 +347,8 @@
   "onboardingTitle": "إعداد ملفك الشخصي",
   "onboardingTrainingSubtitle": "حتى نقترح عليك تمارين تستطيع أداءها فعلاً.",
   "onboardingTrainingTitle": "كيف تتدرّب؟",
+  "prescriptionSeconds": "{count}ث",
+  "prescriptionSets": "{count} مجموعات",
   "privacyExportDescription": "ملف JSON كامل يحتوي على كل ما هو محفوظ في حسابك.",
   "privacyVisibleOnlyToYou": "تمارينك وسجلات تغذيتك وقياساتك ومحادثاتك مع المدرب مرئية لك وحدك. يمكن للمسؤولين رؤية أعداد على مستوى الحساب للدعم فقط، وليس المحتوى نفسه.",
   "profileAbout": "حول التطبيق",
@@ -381,6 +411,10 @@
   "reminderUnavailable": "التذكيرات غير متاحة على هذا الجهاز.",
   "reset": "إعادة تعيين",
   "routeNotFound": "تعذّر العثور على هذه الصفحة.",
+  "seriesBodyWeight": "وزن الجسم",
+  "seriesFiber": "الألياف",
+  "seriesVolume": "حجم التدريب",
+  "seriesWorkouts": "عدد التمارين",
   "syncFailed": "تعذّرت مزامنة بعض التغييرات",
   "syncOffline": "أنت غير متصل",
   "syncOfflineBody": "يمكنك مواصلة التدريب — كل ما تسجّله يُحفظ على جهازك ويُزامَن عند عودة الاتصال.",
@@ -388,6 +422,19 @@
   "syncRetry": "إعادة المزامنة",
   "syncSyncing": "جارٍ المزامنة…",
   "syncUpToDate": "تم حفظ كل التغييرات",
+  "unitCm": "سم",
+  "unitDays": "أيام",
+  "unitG": "غ",
+  "unitIn": "بوصة",
+  "unitKcal": "سعرة",
+  "unitLb": "رطل",
+  "unitMinutes": "دقيقة",
+  "unitMl": "مل",
+  "unitPercent": "٪",
+  "unitReps": "تكرار",
+  "unitSessions": "حصص",
+  "unitSteps": "خطوة",
+  "unitWorkouts": "تمارين",
   "unitsImperial": "إمبراطوري (رطل، بوصة)",
   "unitsMetric": "متري (كجم، سم)",
   "workoutAddExercise": "إضافة تمرين",

@@ -134,7 +134,9 @@ class _ActiveWorkoutBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
-                        session.name,
+                        session.displayName(
+                          Localizations.localeOf(context).languageCode,
+                        ),
                         style: theme.textTheme.titleSmall
                             ?.copyWith(color: theme.colorScheme.onPrimary),
                         maxLines: 1,

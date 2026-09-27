@@ -1,3 +1,5 @@
+import '../../../core/localization/localised_name.dart';
+
 class HabitLog {
   const HabitLog({
     required this.id,
@@ -43,6 +45,7 @@ class Habit {
     required this.targetCount,
     required this.currentStreak,
     required this.longestStreak,
+    this.nameAr,
     this.color,
     this.targetValue,
     this.unit,
@@ -61,6 +64,7 @@ class Habit {
   final int targetCount;
   final int currentStreak;
   final int longestStreak;
+  final String? nameAr;
   final String? color;
   final double? targetValue;
   final String? unit;
@@ -70,6 +74,10 @@ class Habit {
   final int position;
   final HabitLog? today;
   final double completionRate30d;
+
+  /// Prefer the Arabic name when the UI is in Arabic and one exists.
+  String displayName(String languageCode) =>
+      localisedName(languageCode, name, nameAr);
 
   bool get isDoneToday => today?.isCompleted ?? false;
 
@@ -83,6 +91,7 @@ class Habit {
         targetCount: json['target_count'] as int? ?? 1,
         currentStreak: json['current_streak'] as int? ?? 0,
         longestStreak: json['longest_streak'] as int? ?? 0,
+        nameAr: json['name_ar'] as String?,
         color: json['color'] as String?,
         targetValue: (json['target_value'] as num?)?.toDouble(),
         unit: json['unit'] as String?,
@@ -111,6 +120,7 @@ class Habit {
         'target_count': targetCount,
         'current_streak': currentStreak,
         'longest_streak': longestStreak,
+        'name_ar': nameAr,
         'color': color,
         'target_value': targetValue,
         'unit': unit,

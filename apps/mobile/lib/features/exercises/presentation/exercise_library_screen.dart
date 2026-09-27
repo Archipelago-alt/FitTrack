@@ -191,11 +191,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
     );
   }
 
-  String _label(String value) => value
-      .split('_')
-      .map((String part) =>
-          part.isEmpty ? part : part[0].toUpperCase() + part.substring(1))
-      .join(' ');
+  String _label(String value) => context.l10n.category(value);
 }
 
 class _ExerciseTile extends StatelessWidget {

@@ -133,21 +133,31 @@ class StatTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              if (icon != null) ...<Widget>[
-                Icon(icon,
-                    size: 14, color: tone ?? context.fitColors.textMuted),
-                const SizedBox(width: AppSpacing.xs),
+          // The icon rides inside the label's text rather than in a Row with a
+          // Flexible: these tiles sit directly in a Row on several screens, so
+          // they are laid out with an unbounded width, and a flexible child
+          // under an unbounded constraint fails layout — which left the cards
+          // that hold them rendering empty.
+          Text.rich(
+            TextSpan(
+              children: <InlineSpan>[
+                if (icon != null) ...<InlineSpan>[
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding:
+                          const EdgeInsetsDirectional.only(end: AppSpacing.xs),
+                      child: Icon(icon,
+                          size: 14, color: tone ?? context.fitColors.textMuted),
+                    ),
+                  ),
+                ],
+                TextSpan(text: label),
               ],
-              Flexible(
-                child: Text(
-                  label,
-                  style: theme.textTheme.bodySmall,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+            ),
+            style: theme.textTheme.bodySmall,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(

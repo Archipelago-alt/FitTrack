@@ -68,6 +68,7 @@ class FitLineChart extends StatelessWidget {
     final double maxY = allValues.reduce((double a, double b) => a > b ? a : b);
     // Pad the range so the line never touches the frame.
     final double padding = ((maxY - minY).abs() * 0.12).clamp(1.0, 1e6);
+    final double yInterval = ((maxY - minY).abs() / 4).clamp(0.5, 1e6);
 
     final List<LineChartBarData> bars = <LineChartBarData>[];
     for (int index = 0; index < withData.length; index++) {
@@ -134,7 +135,7 @@ class FitLineChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: ((maxY - minY).abs() / 4).clamp(0.5, 1e6),
+            horizontalInterval: yInterval,
             getDrawingHorizontalLine: (double value) => FlLine(
               color: colors.border,
               strokeWidth: 1,
@@ -151,11 +152,16 @@ class FitLineChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 44,
-                interval: ((maxY - minY).abs() / 4).clamp(0.5, 1e6),
+                interval: yInterval,
                 getTitlesWidget: (double value, TitleMeta meta) => Padding(
                   padding: const EdgeInsetsDirectional.only(end: AppSpacing.xs),
                   child: Text(
-                    valueFormatter?.call(value) ?? Formatters.number(value),
+                    // A narrow range — a few kilos of body weight — steps by
+                    // less than a unit, so whole numbers print the same label
+                    // two or three times down the axis.
+                    valueFormatter?.call(value) ??
+                        Formatters.number(value,
+                            decimals: yInterval < 2 ? 1 : 0),
                     style: theme.textTheme.labelSmall
                         ?.copyWith(color: colors.textMuted),
                     textAlign: TextAlign.end,

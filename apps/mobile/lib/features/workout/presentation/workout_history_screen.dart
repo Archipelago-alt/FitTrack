@@ -19,6 +19,7 @@ class WorkoutHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = context.l10n;
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final AsyncValue<PagedResult<WorkoutSession>> history =
         ref.watch(workoutHistoryProvider(1));
     final bool imperial = ref.watch(useImperialProvider);
@@ -61,7 +62,7 @@ class WorkoutHistoryScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  session.name,
+                                  session.displayName(languageCode),
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
@@ -114,23 +115,25 @@ class WorkoutHistoryScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          StatTile(
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutDurationLabel'),
                             value: Units.durationLong(session.durationSeconds),
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalSets'),
                             value: '${session.totalSets}',
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalVolume'),
                             value: Units.volume(
                               session.totalVolumeKg,
                               imperial: imperial,
                             ),
-                          ),
+                          )),
                         ],
                       ),
                     ],

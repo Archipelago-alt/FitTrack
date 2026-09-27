@@ -5,6 +5,11 @@
       "count": {}
     }
   },
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "@goalsDaysLeft": {
     "placeholders": {
       "count": {}
@@ -65,6 +70,16 @@
     "placeholders": {
       "current": {},
       "total": {}
+    }
+  },
+  "@prescriptionSeconds": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@prescriptionSets": {
+    "placeholders": {
+      "count": {}
     }
   },
   "@profileVersion": {
@@ -201,6 +216,7 @@
   "errorServer": "FitTrack is having a problem right now. Please try again shortly.",
   "errorTimeout": "That took too long. Please try again.",
   "errorUnauthorized": "Please sign in to continue.",
+  "exerciseCount": "{count} exercises",
   "exercisesDifficulty": "Difficulty",
   "exercisesEquipment": "Equipment",
   "exercisesFilters": "Filters",
@@ -269,6 +285,18 @@
   "locationHome": "Home",
   "locationMixed": "Mixed",
   "locationOutdoor": "Outdoor",
+  "measureBodyFat": "Body fat",
+  "measureChest": "Chest",
+  "measureHips": "Hips",
+  "measureLeftArm": "Left arm",
+  "measureLeftCalf": "Left calf",
+  "measureLeftThigh": "Left thigh",
+  "measureNeck": "Neck",
+  "measureRightArm": "Right arm",
+  "measureRightCalf": "Right calf",
+  "measureRightThigh": "Right thigh",
+  "measureShoulders": "Shoulders",
+  "measureWaist": "Waist",
   "minutesShort": "{count} min",
   "navHome": "Home",
   "navNutrition": "Nutrition",
@@ -319,6 +347,8 @@
   "onboardingTitle": "Set up your profile",
   "onboardingTrainingSubtitle": "So we only suggest exercises you can actually do.",
   "onboardingTrainingTitle": "How do you train?",
+  "prescriptionSeconds": "{count}s",
+  "prescriptionSets": "{count} sets",
   "privacyExportDescription": "A complete JSON file of everything stored for your account.",
   "privacyVisibleOnlyToYou": "Your workouts, nutrition logs, measurements and FitCoach conversations are visible only to you. Administrators can see account-level counts for support, never the content itself.",
   "profileAbout": "About",
@@ -381,6 +411,10 @@
   "reminderUnavailable": "Reminders are not available on this device.",
   "reset": "Reset",
   "routeNotFound": "We couldn't find that page.",
+  "seriesBodyWeight": "Body weight",
+  "seriesFiber": "Fiber",
+  "seriesVolume": "Training volume",
+  "seriesWorkouts": "Workouts",
   "syncFailed": "Some changes couldn't sync",
   "syncOffline": "You're offline",
   "syncOfflineBody": "You can keep training — everything you log is saved on this device and synced when you're back online.",
@@ -388,6 +422,19 @@
   "syncRetry": "Retry sync",
   "syncSyncing": "Syncing…",
   "syncUpToDate": "All changes saved",
+  "unitCm": "cm",
+  "unitDays": "days",
+  "unitG": "g",
+  "unitIn": "in",
+  "unitKcal": "kcal",
+  "unitLb": "lb",
+  "unitMinutes": "min",
+  "unitMl": "ml",
+  "unitPercent": "%",
+  "unitReps": "reps",
+  "unitSessions": "sessions",
+  "unitSteps": "steps",
+  "unitWorkouts": "workouts",
   "unitsImperial": "Imperial (lb, in)",
   "unitsMetric": "Metric (kg, cm)",
   "workoutAddExercise": "Add exercise",

@@ -54,6 +54,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = context.l10n;
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final ActiveWorkoutState state = ref.watch(activeWorkoutProvider);
     final WorkoutSession? session = state.session;
     final bool imperial = ref.watch(useImperialProvider);
@@ -92,7 +93,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(session.name,
+              Text(session.displayName(languageCode),
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 Units.duration(session.elapsed.inSeconds),
@@ -228,20 +229,22 @@ class _SessionSummaryStrip extends StatelessWidget {
       child: FitCard(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            StatTile(
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutTotalSets'),
               value: '${session.completedSetCount}/${session.plannedSetCount}',
-            ),
-            StatTile(
+            )),
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutTotalVolume'),
               value: Units.volume(session.localVolumeKg, imperial: imperial),
-            ),
-            StatTile(
+            )),
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutDurationLabel'),
               value: Units.durationLong(session.elapsed.inSeconds),
-            ),
+            )),
           ],
         ),
       ),

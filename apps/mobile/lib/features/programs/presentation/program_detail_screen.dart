@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -22,6 +23,7 @@ class ProgramDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = context.l10n;
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final AsyncValue<Program> program =
         ref.watch(programDetailProvider(programId));
 
@@ -67,32 +69,35 @@ class ProgramDetailScreen extends ConsumerWidget {
         data: (Program plan) => ListView(
           padding: const EdgeInsets.all(AppSpacing.screenPadding),
           children: <Widget>[
-            Text(plan.name, style: Theme.of(context).textTheme.headlineSmall),
-            if (plan.description != null) ...<Widget>[
+            Text(plan.displayName(languageCode),
+                style: Theme.of(context).textTheme.headlineSmall),
+            if (plan.displayDescription(languageCode) != null) ...<Widget>[
               const SizedBox(height: AppSpacing.sm),
-              Text(plan.description!,
+              Text(plan.displayDescription(languageCode)!,
                   style: Theme.of(context).textTheme.bodyMedium),
             ],
             const SizedBox(height: AppSpacing.lg),
             FitCard(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  StatTile(
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('fieldTrainingDays'),
                     value: '${plan.daysPerWeek}',
-                  ),
-                  StatTile(
+                  )),
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('exercisesTitle'),
                     value: '${plan.exerciseCount}',
-                  ),
-                  StatTile(
+                  )),
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('fieldSessionLength'),
                     value: plan.estimatedMinutes == null
                         ? '—'
                         : '${plan.estimatedMinutes} min',
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -108,7 +113,7 @@ class ProgramDetailScreen extends ConsumerWidget {
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              day.name,
+                              day.displayName(languageCode),
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                           ),
@@ -135,7 +140,12 @@ class ProgramDetailScreen extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                item.prescription,
+                                l10n.prescription(
+                                  sets: item.targetSets,
+                                  repsMin: item.targetRepsMin,
+                                  repsMax: item.targetRepsMax,
+                                  durationSeconds: item.targetDurationSeconds,
+                                ),
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelSmall

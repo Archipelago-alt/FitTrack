@@ -83,17 +83,19 @@ class WorkoutSummaryScreen extends ConsumerWidget {
             ),
           FitCard(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                StatTile(
+                Expanded(
+                    child: StatTile(
                   label: l10n.t('workoutDurationLabel'),
                   value: Units.durationLong(session.durationSeconds),
-                ),
-                StatTile(
+                )),
+                Expanded(
+                    child: StatTile(
                   label: l10n.t('workoutTotalSets'),
                   value: '${session.totalSets}',
-                ),
-                StatTile(
+                )),
+                Expanded(
+                    child: StatTile(
                   label: l10n.t('workoutTotalVolume'),
                   value: Units.volume(
                     session.totalVolumeKg > 0
@@ -101,7 +103,7 @@ class WorkoutSummaryScreen extends ConsumerWidget {
                         : session.localVolumeKg,
                     imperial: imperial,
                   ),
-                ),
+                )),
               ],
             ),
           ),
