@@ -336,6 +336,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate the development stack
         run: docker compose config --quiet
+      - name: Validate the CI storage overlay
+        run: >-
+          docker compose
+          -f docker-compose.yml
+          -f docker-compose.ci.yml
+          config --quiet
       - name: Validate the production overlay
         env:
           DATABASE_URL: "postgresql+asyncpg://user:pass@db:5432/fittrack"
@@ -358,13 +364,18 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      # The object store is swapped for LocalStack here; see the comment at the
+      # top of docker-compose.ci.yml for why MinIO cannot be pulled on a runner.
       - name: Start the stack
         run: |
           cp .env.example .env
-          docker compose up -d --build postgres redis minio minio-init api worker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            up -d --build postgres redis localstack storage-init api worker
 
       - name: Seed reference and demo data
-        run: docker compose run --rm api seed --demo
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            run --rm api seed --demo
 
       - name: Walk the acceptance criteria
         run: |
@@ -373,8 +384,11 @@ jobs:
 
       - name: Service logs on failure
         if: failure()
-        run: docker compose logs --tail=200 api worker
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            logs --tail=200 api worker localstack storage-init
 
       - name: Tear down
         if: always()
-        run: docker compose down -v
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
