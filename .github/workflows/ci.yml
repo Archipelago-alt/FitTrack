@@ -250,8 +250,27 @@ jobs:
           echo "ABIs carried by the APK:"
           echo "$ABIS"
           test -n "$ABIS"
+          # Always says something. The previous version piped apksigner into
+          # grep and ended with `|| true`, so when apksigner could not be run at
+          # all the step printed a heading and nothing else — a missing tool and
+          # an unsigned APK looked exactly alike, and the `|| true` threw away
+          # the error that would have said which. stderr is folded in and the
+          # outcome is stated in every branch, including which binary was used.
           echo "signing certificate (the DEBUG key here, never the release key):"
-          "$BT/apksigner" verify --print-certs "$APK" | grep -E 'Signer #1' || true
+          SIGNER="$BT/apksigner"
+          if [ ! -x "$SIGNER" ]; then
+            SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -1)
+          fi
+          if [ -n "$SIGNER" ] && [ -x "$SIGNER" ]; then
+            echo "  using $SIGNER"
+            "$SIGNER" verify --verbose --print-certs "$APK" 2>&1 \
+              | grep -E 'Signer|Verifies|Verified using|Error|Exception' \
+              || echo "  apksigner ran but reported nothing recognisable"
+          else
+            echo "  no apksigner under $ANDROID_HOME/build-tools, so the signer is unreported"
+            ls -1 "$ANDROID_HOME/build-tools" 2>/dev/null \
+              | sed 's/^/    build-tools present: /' || true
+          fi
 
       # The APK is not uploaded on purpose. It is signed with the debug key, so
       # installing it would block the update path for a properly signed release
