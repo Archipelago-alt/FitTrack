@@ -153,20 +153,29 @@ class FitLineChart extends StatelessWidget {
                 showTitles: true,
                 reservedSize: 44,
                 interval: yInterval,
-                getTitlesWidget: (double value, TitleMeta meta) => Padding(
-                  padding: const EdgeInsetsDirectional.only(end: AppSpacing.xs),
-                  child: Text(
-                    // A narrow range — a few kilos of body weight — steps by
-                    // less than a unit, so whole numbers print the same label
-                    // two or three times down the axis.
-                    valueFormatter?.call(value) ??
-                        Formatters.number(value,
-                            decimals: yInterval < 2 ? 1 : 0),
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: colors.textMuted),
-                    textAlign: TextAlign.end,
-                  ),
-                ),
+                getTitlesWidget: (double value, TitleMeta meta) {
+                  // The padded top of the range sits less than a step above
+                  // the last real tick, so both labels would be drawn almost
+                  // on top of each other.
+                  if ((maxY + padding - value).abs() < yInterval * 0.6) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding:
+                        const EdgeInsetsDirectional.only(end: AppSpacing.xs),
+                    child: Text(
+                      // A narrow range — a few kilos of body weight — steps by
+                      // less than a unit, so whole numbers print the same label
+                      // two or three times down the axis.
+                      valueFormatter?.call(value) ??
+                          Formatters.number(value,
+                              decimals: yInterval < 2 ? 1 : 0),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: colors.textMuted),
+                      textAlign: TextAlign.end,
+                    ),
+                  );
+                },
               ),
             ),
             bottomTitles: AxisTitles(

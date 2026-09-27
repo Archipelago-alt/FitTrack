@@ -22,6 +22,7 @@ import 'package:fittrack/core/providers.dart';
 import 'package:fittrack/core/router/app_router.dart';
 import 'package:fittrack/core/storage/app_preferences.dart';
 import 'package:fittrack/core/theme/app_theme.dart';
+import 'package:fittrack/core/utils/units.dart';
 import 'package:fittrack/features/auth/application/auth_controller.dart';
 
 /// Renders the real screens, in demo mode, and writes them out as PNGs.
@@ -99,6 +100,25 @@ class _Harness extends ConsumerWidget {
       // the app bar and chips carry their own text styles, and anything left
       // on the test renderer's default font draws as empty boxes.
       theme: _withFont(base),
+      // Mirrors what the real app does in its own builder: the unit words
+      // come from the resolved locale. Without this the screenshots would
+      // show English units the app itself would not print.
+      builder: (BuildContext context, Widget? child) {
+        final AppLocalizations l10n = AppLocalizations.of(context);
+        Units.labels = UnitLabels(
+          kg: l10n.t('commonKg'),
+          lb: l10n.t('unitLb'),
+          cm: l10n.t('unitCm'),
+          inch: l10n.t('unitIn'),
+          km: l10n.t('unitKm'),
+          metre: l10n.t('unitMetre'),
+          mile: l10n.t('unitMile'),
+          foot: l10n.t('unitFoot'),
+          hour: l10n.t('unitHourShort'),
+          minute: l10n.t('unitMinuteShort'),
+        );
+        return child ?? const SizedBox.shrink();
+      },
     );
   }
 }

@@ -73,4 +73,36 @@ void main() {
     expect(Units.step(imperial: false), 1.25);
     expect(Units.step(imperial: true), closeTo(1.134, 0.01));
   });
+
+  group('unit words follow the language', () {
+    tearDown(() => Units.labels = UnitLabels.english);
+
+    test('Arabic labels replace the English ones', () {
+      Units.labels = const UnitLabels(
+        kg: 'كجم',
+        lb: 'رطل',
+        cm: 'سم',
+        inch: 'بوصة',
+        km: 'كم',
+        metre: 'م',
+        mile: 'ميل',
+        foot: 'قدم',
+        hour: 'س',
+        minute: 'د',
+      );
+      expect(Units.weight(82.5, imperial: false), '82.5 كجم');
+      expect(Units.weight(82.5, imperial: true), '181.9 رطل');
+      expect(Units.length(94, imperial: false), '94 سم');
+      expect(Units.height(178, imperial: false), '178 سم');
+      expect(Units.distance(5000, imperial: false), '5 كم');
+      expect(Units.distance(800, imperial: false), '800 م');
+      expect(Units.durationLong(4320), '1س 12د');
+      expect(Units.volume(69161, imperial: false), '69.2k كجم');
+    });
+
+    test('English is the default, so nothing else has to know about this', () {
+      expect(Units.weight(82.5, imperial: false), '82.5 kg');
+      expect(Units.durationLong(4320), '1h 12m');
+    });
+  });
 }

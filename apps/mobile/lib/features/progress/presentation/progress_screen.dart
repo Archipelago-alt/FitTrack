@@ -174,9 +174,11 @@ class ProgressScreen extends ConsumerWidget {
               child: _ChartCard(
                 chart: weight,
                 onRetry: () => ref.invalidate(weightChartProvider),
+                // Body weight moves in fractions of a kilo, so whole numbers
+                // would print the same label two or three times down the axis.
                 valueFormatter: (double value) => imperial
                     ? Units.kgToLb(value).toStringAsFixed(0)
-                    : value.toStringAsFixed(0),
+                    : value.toStringAsFixed(1),
               ),
             ),
             SectionHeader(title: l10n.t('workoutTotalVolume')),
