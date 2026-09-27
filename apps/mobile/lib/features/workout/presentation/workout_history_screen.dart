@@ -115,23 +115,25 @@ class WorkoutHistoryScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          StatTile(
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutDurationLabel'),
                             value: Units.durationLong(session.durationSeconds),
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalSets'),
                             value: '${session.totalSets}',
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalVolume'),
                             value: Units.volume(
                               session.totalVolumeKg,
                               imperial: imperial,
                             ),
-                          ),
+                          )),
                         ],
                       ),
                     ],

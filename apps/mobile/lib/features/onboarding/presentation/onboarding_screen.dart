@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/category_labels.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -552,17 +553,13 @@ class _EquipmentStep extends StatelessWidget {
         MultiChoiceChips<String>(
           values: _equipment,
           selected: draft.availableEquipment.toSet(),
-          labelBuilder: (String value) =>
-              value.replaceAll('_', ' ').split(' ').map(_capitalise).join(' '),
+          labelBuilder: (String value) => context.l10n.category(value),
           onChanged: (Set<String> next) =>
               onChanged(draft.copyWith(availableEquipment: next.toList())),
         ),
       ],
     );
   }
-
-  static String _capitalise(String value) =>
-      value.isEmpty ? value : value[0].toUpperCase() + value.substring(1);
 }
 
 class _ReviewStep extends StatelessWidget {

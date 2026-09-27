@@ -95,10 +95,10 @@ class _Harness extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: base.copyWith(
-        textTheme: base.textTheme.apply(fontFamily: 'DejaVuSans'),
-        primaryTextTheme: base.primaryTextTheme.apply(fontFamily: 'DejaVuSans'),
-      ),
+      // The substitute font has to reach the component themes too — buttons,
+      // the app bar and chips carry their own text styles, and anything left
+      // on the test renderer's default font draws as empty boxes.
+      theme: _withFont(base),
     );
   }
 }
@@ -110,7 +110,11 @@ void main() {
   // fake clock. `FontLoader.load()` waits on the engine, so it cannot complete
   // inside a `testWidgets` body.
   setUpAll(() async {
-    if (outRoot != null) await _loadFonts();
+    if (outRoot == null) return;
+    // Without the binding, the font-registration message has nothing to answer
+    // it and the load never returns.
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await _loadFonts();
   });
 
   for (final String language in <String>['ar', 'en']) {
@@ -127,8 +131,12 @@ void main() {
 
           void stage(String s) => debugPrint('[shots] $s');
 
-          final Directory tmp =
-              await Directory.systemTemp.createTemp('fittrack_shots');
+          // `createTemp` is real file I/O, so it too has to run outside the
+          // fake clock.
+          Directory? scratch;
+          await tester.runAsync(() async => scratch =
+              await Directory.systemTemp.createTemp('fittrack_shots'));
+          final Directory tmp = scratch!;
           addTearDown(() {
             if (tmp.existsSync()) tmp.deleteSync(recursive: true);
           });
@@ -207,9 +215,15 @@ void main() {
 /// platform font is not available under `flutter test`.
 Future<void> _loadFonts() async {
   const Map<String, List<String>> families = <String, List<String>>{
+    // Covers Arabic as well as Latin; the phone's own font is not available
+    // to the test renderer.
     'DejaVuSans': <String>[
       '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
       '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+    ],
+    // Otherwise every icon draws as an empty box.
+    'MaterialIcons': <String>[
+      '/opt/flutter/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
     ],
   };
   for (final MapEntry<String, List<String>> entry in families.entries) {
@@ -250,4 +264,41 @@ Future<void> _write(WidgetTester tester, GlobalKey key, String path) async {
     }
     image.dispose();
   });
+}
+
+/// Re-points every text style in [base] at the substitute font.
+ThemeData _withFont(ThemeData base) {
+  const String family = 'DejaVuSans';
+  TextStyle? f(TextStyle? style) => style?.copyWith(fontFamily: family);
+  ButtonStyle? b(ButtonStyle? style) => style?.copyWith(
+        textStyle: WidgetStateProperty.resolveWith(
+          (Set<WidgetState> states) =>
+              f(style.textStyle?.resolve(states)) ??
+              TextStyle(fontFamily: family, fontWeight: FontWeight.w600),
+        ),
+      );
+  return base.copyWith(
+    textTheme: base.textTheme.apply(fontFamily: family),
+    primaryTextTheme: base.primaryTextTheme.apply(fontFamily: family),
+    appBarTheme: base.appBarTheme.copyWith(
+      titleTextStyle: f(base.appBarTheme.titleTextStyle) ??
+          TextStyle(fontFamily: family, fontSize: 20),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      labelStyle: f(base.chipTheme.labelStyle),
+      secondaryLabelStyle: f(base.chipTheme.secondaryLabelStyle),
+    ),
+    filledButtonTheme:
+        FilledButtonThemeData(style: b(base.filledButtonTheme.style)),
+    outlinedButtonTheme:
+        OutlinedButtonThemeData(style: b(base.outlinedButtonTheme.style)),
+    textButtonTheme: TextButtonThemeData(style: b(base.textButtonTheme.style)),
+    navigationBarTheme: base.navigationBarTheme.copyWith(
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (Set<WidgetState> states) =>
+            f(base.navigationBarTheme.labelTextStyle?.resolve(states)) ??
+            TextStyle(fontFamily: family, fontSize: 11),
+      ),
+    ),
+  );
 }

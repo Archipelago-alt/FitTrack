@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/category_labels.dart';
 import '../../../core/localization/data_labels.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
@@ -104,27 +105,30 @@ class ProgressScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          StatTile(
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('navWorkout'),
                             value: '${data.totalWorkouts}',
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalVolume'),
                             value: Units.volume(
                               data.totalVolumeKg,
                               imperial: imperial,
                             ),
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('workoutTotalSets'),
                             value: '${data.totalSets}',
-                          ),
-                          StatTile(
+                          )),
+                          Expanded(
+                              child: StatTile(
                             label: l10n.t('progressRecords'),
                             value: '${data.personalRecords}',
-                          ),
+                          )),
                         ],
                       ),
                       if (data.summary != null) ...<Widget>[
@@ -143,9 +147,7 @@ class ProgressScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.only(
                                     bottom: AppSpacing.md),
                                 child: ProgressBarRow(
-                                  label: group.muscleGroup
-                                      .replaceAll('_', ' ')
-                                      .toUpperCase(),
+                                  label: l10n.category(group.muscleGroup),
                                   value: group.percent / 100,
                                   trailing:
                                       '${group.percent.toStringAsFixed(0)}%',

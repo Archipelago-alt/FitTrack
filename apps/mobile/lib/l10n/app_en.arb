@@ -5,6 +5,11 @@
       "count": {}
     }
   },
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "@goalsDaysLeft": {
     "placeholders": {
       "count": {}
@@ -211,6 +216,7 @@
   "errorServer": "FitTrack is having a problem right now. Please try again shortly.",
   "errorTimeout": "That took too long. Please try again.",
   "errorUnauthorized": "Please sign in to continue.",
+  "exerciseCount": "{count} exercises",
   "exercisesDifficulty": "Difficulty",
   "exercisesEquipment": "Equipment",
   "exercisesFilters": "Filters",

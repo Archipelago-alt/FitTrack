@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/category_labels.dart';
 import '../../../core/localization/data_labels.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -145,12 +146,7 @@ class _PlanGeneratorScreenState extends ConsumerState<PlanGeneratorScreen> {
           MultiChoiceChips<String>(
             values: _equipment,
             selected: request.equipment.toSet(),
-            labelBuilder: (String value) => value
-                .split('_')
-                .map((String part) => part.isEmpty
-                    ? part
-                    : part[0].toUpperCase() + part.substring(1))
-                .join(' '),
+            labelBuilder: (String value) => l10n.category(value),
             onChanged: (Set<String> next) => controller
                 .updateRequest(request.copyWith(equipment: next.toList())),
           ),

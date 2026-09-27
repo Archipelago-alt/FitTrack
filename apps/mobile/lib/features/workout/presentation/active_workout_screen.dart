@@ -229,20 +229,22 @@ class _SessionSummaryStrip extends StatelessWidget {
       child: FitCard(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            StatTile(
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutTotalSets'),
               value: '${session.completedSetCount}/${session.plannedSetCount}',
-            ),
-            StatTile(
+            )),
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutTotalVolume'),
               value: Units.volume(session.localVolumeKg, imperial: imperial),
-            ),
-            StatTile(
+            )),
+            Expanded(
+                child: StatTile(
               label: l10n.t('workoutDurationLabel'),
               value: Units.durationLong(session.elapsed.inSeconds),
-            ),
+            )),
           ],
         ),
       ),

@@ -47,5 +47,12 @@ extension CategoryLabels on AppLocalizations {
     'stretching': 'catTypeStretching',
     'balance': 'catTypeBalance',
     'plyometric': 'catTypePlyometric',
+    // training goals, which the profile and the plan generator both show
+    'lose_weight': 'goalLoseWeight',
+    'gain_muscle': 'goalGainMuscle',
+    'improve_strength': 'goalImproveStrength',
+    'improve_endurance': 'goalImproveEndurance',
+    'maintain_weight': 'goalMaintainWeight',
+    'general_fitness': 'goalGeneralFitness',
   };
 }

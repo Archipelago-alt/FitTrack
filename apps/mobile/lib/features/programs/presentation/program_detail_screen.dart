@@ -80,22 +80,24 @@ class ProgramDetailScreen extends ConsumerWidget {
             FitCard(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  StatTile(
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('fieldTrainingDays'),
                     value: '${plan.daysPerWeek}',
-                  ),
-                  StatTile(
+                  )),
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('exercisesTitle'),
                     value: '${plan.exerciseCount}',
-                  ),
-                  StatTile(
+                  )),
+                  Expanded(
+                      child: StatTile(
                     label: l10n.t('fieldSessionLength'),
                     value: plan.estimatedMinutes == null
                         ? '—'
                         : '${plan.estimatedMinutes} min',
-                  ),
+                  )),
                 ],
               ),
             ),

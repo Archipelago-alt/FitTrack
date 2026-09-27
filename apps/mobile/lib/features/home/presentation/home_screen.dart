@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -150,35 +152,49 @@ class _DashboardBody extends ConsumerWidget {
           padding:
               const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
           child: FitCard(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ProgressRing(
-                  value: data.calories.fraction,
-                  label: l10n.t('nutritionCalories'),
-                  centerText: '${data.calories.consumed.round()}',
-                  subtitle: data.calories.target == null
-                      ? null
-                      : '/ ${data.calories.target!.round()}',
-                  isOver: (data.calories.remaining ?? 0) < 0,
-                ),
-                ProgressRing(
-                  value: data.proteinG.fraction,
-                  label: l10n.t('nutritionProtein'),
-                  centerText: '${data.proteinG.consumed.round()}g',
-                  subtitle: data.proteinG.target == null
-                      ? null
-                      : '/ ${data.proteinG.target!.round()}',
-                  color: context.fitColors.info,
-                ),
-                ProgressRing(
-                  value: data.waterMl.fraction,
-                  label: l10n.t('nutritionWater'),
-                  centerText:
-                      '${(data.waterMl.consumed / 1000).toStringAsFixed(1)}L',
-                  color: context.fitColors.info,
-                ),
-              ],
+            // Three 92px rings do not fit a 320px-wide phone, and a fixed size
+            // would push them past the card's edge rather than shrink. Size
+            // them from the width that is actually available.
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final double ringSize = math.min(
+                  92.0,
+                  (constraints.maxWidth - AppSpacing.md * 2) / 3,
+                );
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    ProgressRing(
+                      size: ringSize,
+                      value: data.calories.fraction,
+                      label: l10n.t('nutritionCalories'),
+                      centerText: '${data.calories.consumed.round()}',
+                      subtitle: data.calories.target == null
+                          ? null
+                          : '/ ${data.calories.target!.round()}',
+                      isOver: (data.calories.remaining ?? 0) < 0,
+                    ),
+                    ProgressRing(
+                      size: ringSize,
+                      value: data.proteinG.fraction,
+                      label: l10n.t('nutritionProtein'),
+                      centerText: '${data.proteinG.consumed.round()}g',
+                      subtitle: data.proteinG.target == null
+                          ? null
+                          : '/ ${data.proteinG.target!.round()}',
+                      color: context.fitColors.info,
+                    ),
+                    ProgressRing(
+                      size: ringSize,
+                      value: data.waterMl.fraction,
+                      label: l10n.t('nutritionWater'),
+                      centerText:
+                          '${(data.waterMl.consumed / 1000).toStringAsFixed(1)}L',
+                      color: context.fitColors.info,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -267,9 +283,11 @@ class _DashboardBody extends ConsumerWidget {
               child: FitLineChart(
                 series: <ChartSeries>[data.weightTrend!],
                 height: 170,
+                // Body weight moves in fractions of a kilo, so whole
+                // numbers would repeat the same label down the axis.
                 valueFormatter: (double value) => imperial
                     ? Units.kgToLb(value).toStringAsFixed(0)
-                    : value.toStringAsFixed(0),
+                    : value.toStringAsFixed(1),
               ),
             ),
           ),
@@ -469,8 +487,9 @@ class _TodayCard extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             '${today.displayProgramName(languageCode)} · '
-            '${today.exerciseCount} '
-            '${l10n.t('exercisesTitle').toLowerCase()}'
+            '${l10n.t('exerciseCount', <String, Object?>{
+                  'count': today.exerciseCount
+                })}'
             '${today.estimatedMinutes != null ? ' · ~${l10n.t('minutesShort', <String, Object?>{
                     'count': today.estimatedMinutes
                   })}' : ''}',

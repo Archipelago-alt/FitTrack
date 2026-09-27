@@ -5,6 +5,11 @@
       "count": {}
     }
   },
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "@goalsDaysLeft": {
     "placeholders": {
       "count": {}
@@ -211,6 +216,7 @@
   "errorServer": "يواجه فيت تراك مشكلة حالياً. يرجى المحاولة بعد قليل.",
   "errorTimeout": "استغرق ذلك وقتاً طويلاً. يرجى المحاولة مرة أخرى.",
   "errorUnauthorized": "يرجى تسجيل الدخول للمتابعة.",
+  "exerciseCount": "{count} تمارين",
   "exercisesDifficulty": "المستوى",
   "exercisesEquipment": "المعدات",
   "exercisesFilters": "عوامل التصفية",

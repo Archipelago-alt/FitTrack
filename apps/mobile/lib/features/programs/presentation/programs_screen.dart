@@ -192,7 +192,9 @@ class _ProgramCard extends ConsumerWidget {
                   '${l10n.t('programsDayCount', <String, Object?>{
                         'count': program.dayCount
                       })}'
-                  ' · ${program.exerciseCount} ${l10n.t('exercisesTitle').toLowerCase()}'
+                  ' · ${l10n.t('exerciseCount', <String, Object?>{
+                        'count': program.exerciseCount
+                      })}'
                   '${program.estimatedMinutes != null ? ' · ~${l10n.t('minutesShort', <String, Object?>{
                           'count': program.estimatedMinutes
                         })}' : ''}',

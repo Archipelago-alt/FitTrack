@@ -190,7 +190,8 @@ class _DayCard extends ConsumerWidget {
                     Text(
                       day.isRestDay
                           ? l10n.t('homeRestDay')
-                          : '${day.exercises.length} ${l10n.t('exercisesTitle').toLowerCase()}',
+                          : l10n.t('exerciseCount',
+                              <String, Object?>{'count': day.exercises.length}),
                       style: theme.textTheme.bodySmall,
                     ),
                   ],

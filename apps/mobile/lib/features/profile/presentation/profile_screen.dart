@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../core/demo/demo_mode.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/category_labels.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -93,27 +94,23 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: FitCard(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    StatTile(
+                    Expanded(
+                        child: StatTile(
                       label: l10n.t('fieldWeight'),
                       value: Units.weight(profile.currentWeightKg,
                           imperial: imperial),
-                    ),
-                    StatTile(
+                    )),
+                    Expanded(
+                        child: StatTile(
                       label: l10n.t('fieldHeight'),
                       value: Units.height(profile.heightCm, imperial: imperial),
-                    ),
-                    StatTile(
+                    )),
+                    Expanded(
+                        child: StatTile(
                       label: l10n.t('homeGoals'),
-                      value: profile.primaryGoal
-                          .replaceAll('_', ' ')
-                          .split(' ')
-                          .map((String p) => p.isEmpty
-                              ? p
-                              : p[0].toUpperCase() + p.substring(1))
-                          .join(' '),
-                    ),
+                      value: l10n.category(profile.primaryGoal),
+                    )),
                   ],
                 ),
               ),
