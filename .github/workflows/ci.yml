@@ -178,6 +178,69 @@ jobs:
           path: apps/mobile/coverage/lcov.info
           if-no-files-found: ignore
 
+  android:
+    name: Android — release build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      # Matches the JDK the release workflow builds with, so a Gradle or AGP
+      # problem shows up here rather than during a release run.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Generate the platform folders
+        run: ./tool/bootstrap_platforms.sh
+
+      - name: Install
+        run: flutter pub get
+
+      # FITTRACK_KEYSTORE is deliberately unset, so the signing config falls
+      # back to the debug key and this needs no secrets. It proves the release
+      # build compiles and that the signing config is wired; it does not prove
+      # anything about the real signing key, which only the release workflow
+      # holds.
+      - name: Build the release APK
+        run: |
+          flutter build apk --release \
+            --dart-define=API_BASE_URL=https://unused.invalid
+
+      # Asserts the two things worth asserting — the APK exists, and it carries
+      # native libraries for at least one ABI, since `flutter build apk` without
+      # `--split-per-abi` is expected to produce one universal APK. The
+      # certificate and badging lines are informational, so a change in a tool's
+      # output format cannot fail the build on its own.
+      - name: Report what was built
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          ls -l "$APK"
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/aapt2" dump badging "$APK" | grep -E '^package:' || true
+          ABIS=$(unzip -l "$APK" | grep -oE 'lib/[^/]+/' | sort -u || true)
+          echo "ABIs carried by the APK:"
+          echo "$ABIS"
+          test -n "$ABIS"
+          echo "signing certificate (the DEBUG key here, never the release key):"
+          "$BT/apksigner" verify --print-certs "$APK" | grep -E 'Signer #1' || true
+
+      # The APK is not uploaded on purpose. It is signed with the debug key, so
+      # installing it would block the update path for a properly signed release
+      # on the same device: Android refuses an update whose key differs, and the
+      # only way out is an uninstall, which erases local data. The signed
+      # artefact comes from the Release Android workflow and nowhere else.
+
   docker:
     name: Docker — build images
     runs-on: ubuntu-latest
