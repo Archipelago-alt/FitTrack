@@ -372,6 +372,8 @@ class TodayWorkout {
     required this.dayId,
     required this.dayName,
     required this.exerciseCount,
+    this.programNameAr,
+    this.dayNameAr,
     this.estimatedMinutes,
     this.isRestDay = false,
   });
@@ -381,8 +383,22 @@ class TodayWorkout {
   final String dayId;
   final String dayName;
   final int exerciseCount;
+  final String? programNameAr;
+  final String? dayNameAr;
   final int? estimatedMinutes;
   final bool isRestDay;
+
+  /// Prefer the Arabic program name when the UI is in Arabic and one exists.
+  String displayProgramName(String languageCode) =>
+      languageCode == 'ar' && (programNameAr?.isNotEmpty ?? false)
+          ? programNameAr!
+          : programName;
+
+  /// Prefer the Arabic day name when the UI is in Arabic and one exists.
+  String displayDayName(String languageCode) =>
+      languageCode == 'ar' && (dayNameAr?.isNotEmpty ?? false)
+          ? dayNameAr!
+          : dayName;
 
   factory TodayWorkout.fromJson(Map<String, dynamic> json) => TodayWorkout(
         programId: json['program_id'] as String,
@@ -390,6 +406,8 @@ class TodayWorkout {
         dayId: json['day_id'] as String,
         dayName: json['day_name'] as String,
         exerciseCount: json['exercise_count'] as int? ?? 0,
+        programNameAr: json['program_name_ar'] as String?,
+        dayNameAr: json['day_name_ar'] as String?,
         estimatedMinutes: json['estimated_minutes'] as int?,
         isRestDay: json['is_rest_day'] as bool? ?? false,
       );
@@ -400,6 +418,8 @@ class TodayWorkout {
         'day_id': dayId,
         'day_name': dayName,
         'exercise_count': exerciseCount,
+        'program_name_ar': programNameAr,
+        'day_name_ar': dayNameAr,
         'estimated_minutes': estimatedMinutes,
         'is_rest_day': isRestDay,
       };

@@ -54,6 +54,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = context.l10n;
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final ActiveWorkoutState state = ref.watch(activeWorkoutProvider);
     final WorkoutSession? session = state.session;
     final bool imperial = ref.watch(useImperialProvider);
@@ -92,7 +93,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(session.name,
+              Text(session.displayName(languageCode),
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 Units.duration(session.elapsed.inSeconds),

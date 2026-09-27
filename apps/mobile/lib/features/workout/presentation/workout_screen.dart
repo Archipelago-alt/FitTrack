@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/data_labels.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -104,7 +105,8 @@ class WorkoutScreen extends ConsumerWidget {
                 )
               else ...<Widget>[
                 SectionHeader(
-                  title: plan.name,
+                  title: plan.displayName(
+                      Localizations.localeOf(context).languageCode),
                   subtitle: l10n.t('programsDayCount', <String, Object?>{
                     'count': plan.dayCount,
                   }),
@@ -221,7 +223,12 @@ class _DayCard extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          item.prescription,
+                          l10n.prescription(
+                            sets: item.targetSets,
+                            repsMin: item.targetRepsMin,
+                            repsMax: item.targetRepsMax,
+                            durationSeconds: item.targetDurationSeconds,
+                          ),
                           style: theme.textTheme.labelSmall
                               ?.copyWith(color: context.fitColors.textMuted),
                         ),

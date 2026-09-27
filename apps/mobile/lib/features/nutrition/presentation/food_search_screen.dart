@@ -203,6 +203,7 @@ class _PortionSheetState extends State<_PortionSheet> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = context.l10n;
     final ThemeData theme = Theme.of(context);
+    final String languageCode = Localizations.localeOf(context).languageCode;
     final double factor = _value / 100;
 
     return Padding(
@@ -217,8 +218,7 @@ class _PortionSheetState extends State<_PortionSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            widget.food
-                .displayName(Localizations.localeOf(context).languageCode),
+            widget.food.displayName(languageCode),
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -228,7 +228,7 @@ class _PortionSheetState extends State<_PortionSheet> {
               children: widget.food.servingOptions
                   .map(
                     (ServingOption option) => ActionChip(
-                      label: Text(option.label),
+                      label: Text(option.displayLabel(languageCode)),
                       onPressed: () => setState(
                         () => _grams.text = option.grams.round().toString(),
                       ),

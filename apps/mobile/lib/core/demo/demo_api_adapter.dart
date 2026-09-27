@@ -251,8 +251,11 @@ class DemoApiAdapter implements HttpClientAdapter {
         throw _DemoError(
           503,
           'demo_offline',
-          'Sync is unavailable in demo mode. Changes are saved on this device '
-              'only.',
+          _isArabic
+              ? 'المزامنة غير متاحة في الوضع التجريبي. تُحفظ تغييراتك على هذا '
+                  'الجهاز فقط.'
+              : 'Sync is unavailable in demo mode. Changes are saved on this '
+                  'device only.',
         );
       default:
         throw _DemoError(404, 'not_found', 'No demo data for $path');
@@ -283,7 +286,7 @@ class DemoApiAdapter implements HttpClientAdapter {
         return <dynamic>[
           <String, dynamic>{
             'id': 'demo-session',
-            'device': 'This device',
+            'device': _isArabic ? 'هذا الجهاز' : 'This device',
             'created_at': _now(),
             'last_seen_at': _now(),
             'current': true,
@@ -291,7 +294,10 @@ class DemoApiAdapter implements HttpClientAdapter {
         ];
       case 'logout':
         // Nothing to revoke: the demo never held a real session.
-        return <String, dynamic>{'success': true, 'message': 'Signed out.'};
+        return <String, dynamic>{
+          'success': true,
+          'message': _isArabic ? 'تم تسجيل الخروج.' : 'Signed out.',
+        };
       case 'change-password':
       case 'forgot-password':
       case 'reset-password':
@@ -301,14 +307,18 @@ class DemoApiAdapter implements HttpClientAdapter {
         throw _DemoError(
           503,
           'demo_offline',
-          'Account and password changes need a server, which demo mode does '
-              'not have.',
+          _isArabic
+              ? 'تغيير الحساب أو كلمة المرور يحتاج إلى خادم، وهو غير متوفر في '
+                  'الوضع التجريبي.'
+              : 'Account and password changes need a server, which demo mode '
+                  'does not have.',
         );
       case 'delete-account':
         await _store.reset();
         return <String, dynamic>{
           'success': true,
-          'message': 'Demo data cleared.'
+          'message':
+              _isArabic ? 'تم محو البيانات التجريبية.' : 'Demo data cleared.',
         };
       default:
         throw _DemoError(404, 'not_found', 'No demo route for auth/$sub');
@@ -459,7 +469,12 @@ class DemoApiAdapter implements HttpClientAdapter {
       final Map<String, dynamic> copy = <String, dynamic>{
         ...all[idx],
         'id': _id(),
-        'name': '${all[idx]['name']} (copy)',
+        'name': _isArabic
+            ? '${all[idx]['name_ar'] ?? all[idx]['name']} (نسخة)'
+            : '${all[idx]['name']} (copy)',
+        'name_ar': all[idx]['name_ar'] == null
+            ? null
+            : '${all[idx]['name_ar']} (نسخة)',
         'is_active': false,
       };
       await _store.putList('programs', <Map<String, dynamic>>[...all, copy]);
@@ -600,7 +615,8 @@ class DemoApiAdapter implements HttpClientAdapter {
     }
     return <String, dynamic>{
       'id': full['id'],
-      'name': full['name'] ?? 'Workout',
+      'name': full['name'] ?? (_isArabic ? 'تمرين' : 'Workout'),
+      'name_ar': full['name_ar'],
       'started_at': full['started_at'],
       'completed_at': full['completed_at'],
       'duration_seconds': full['duration_seconds'],
@@ -699,8 +715,13 @@ class DemoApiAdapter implements HttpClientAdapter {
           final Map<String, dynamic>? progress =
               _derived.exerciseProgress(p[2], q['range'] ?? '6m');
           if (progress == null) {
-            throw _DemoError(404, 'not_found',
-                'No stored sessions include that exercise yet');
+            throw _DemoError(
+              404,
+              'not_found',
+              _isArabic
+                  ? 'لا توجد حصص محفوظة تتضمن هذا التمرين بعد'
+                  : 'No stored sessions include that exercise yet',
+            );
           }
           return progress;
         }
@@ -781,7 +802,12 @@ class DemoApiAdapter implements HttpClientAdapter {
       }
       if (p.length > 3 && p[2] == 'barcode') {
         throw _DemoError(
-            404, 'not_found', 'Barcode scanning is not available in demo mode');
+          404,
+          'not_found',
+          _isArabic
+              ? 'قراءة الباركود غير متاحة في الوضع التجريبي'
+              : 'Barcode scanning is not available in demo mode',
+        );
       }
       if (p.length > 3 && p[3] == 'favorite') {
         // The caller reads `is_favorite` back, so a bare success would make
@@ -823,7 +849,7 @@ class DemoApiAdapter implements HttpClientAdapter {
         final String on = '${_asMap(body)['logged_on'] ?? q['on'] ?? _today()}';
         final Map<String, dynamic> meal = DemoAnalytics.withMealTotals(
           <String, dynamic>{
-            'name': _asMap(body)['meal_type'] ?? 'Meal',
+            'name': _asMap(body)['meal_type'] ?? (_isArabic ? 'وجبة' : 'Meal'),
             ..._asMap(body),
             'id': _id(),
             // Required by the client model.
@@ -1089,7 +1115,7 @@ class DemoApiAdapter implements HttpClientAdapter {
         }
         plannedDays.add(<String, dynamic>{
           'day_index': d,
-          'name': 'Day ${d + 1}',
+          'name': _isArabic ? 'اليوم ${d + 1}' : 'Day ${d + 1}',
           'exercises': picks,
         });
       }
@@ -1097,8 +1123,11 @@ class DemoApiAdapter implements HttpClientAdapter {
         'generation_id': _id(),
         'disclaimer': _note,
         'plan': <String, dynamic>{
-          'name': 'Demo ${days}-day plan',
-          'description': 'Built offline from the bundled exercise library.',
+          'name':
+              _isArabic ? 'خطة تجريبية من $days أيام' : 'Demo ${days}-day plan',
+          'description': _isArabic
+              ? 'بُنيت دون اتصال من مكتبة التمارين المضمّنة.'
+              : 'Built offline from the bundled exercise library.',
           'goal': req['goal'] ?? 'general_fitness',
           'difficulty': 'intermediate',
           'days_per_week': days,
@@ -1123,8 +1152,13 @@ class DemoApiAdapter implements HttpClientAdapter {
 
     if (sub == 'progress-summary') {
       return <String, dynamic>{
-        'summary': '$kDemoNote\n\nYour bundled history shows steady training '
-            'across the last twelve weeks, with the most volume on lower-body days.',
+        'summary': _isArabic
+            ? '$kDemoNoteAr\n\nيُظهر سجلّك المضمّن تدريبًا منتظمًا خلال '
+                'الأسابيع الاثني عشر الماضية، وأعلى حجم تدريبي في أيام الجزء '
+                'السفلي.'
+            : '$kDemoNote\n\nYour bundled history shows steady training '
+                'across the last twelve weeks, with the most volume on '
+                'lower-body days.',
         'disclaimer': _note,
       };
     }
@@ -1138,7 +1172,9 @@ class DemoApiAdapter implements HttpClientAdapter {
             .map((Map<String, dynamic> e) => <String, dynamic>{
                   'exercise_id': e['id'],
                   'name': _isArabic ? (e['name_ar'] ?? e['name']) : e['name'],
-                  'reason': 'Bundled suggestion (demo mode).',
+                  'reason': _isArabic
+                      ? 'اقتراح مضمّن (الوضع التجريبي).'
+                      : 'Bundled suggestion (demo mode).',
                 })
             .toList(),
       };

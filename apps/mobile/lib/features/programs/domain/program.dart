@@ -97,6 +97,7 @@ class ProgramDay {
     required this.name,
     required this.position,
     required this.isRestDay,
+    this.nameAr,
     this.weekday,
     this.notes,
     this.exercises = const <DayExercise>[],
@@ -106,15 +107,21 @@ class ProgramDay {
   final String name;
   final int position;
   final bool isRestDay;
+  final String? nameAr;
   final int? weekday;
   final String? notes;
   final List<DayExercise> exercises;
+
+  /// Prefer the Arabic name when the UI is in Arabic and one exists.
+  String displayName(String languageCode) =>
+      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
 
   factory ProgramDay.fromJson(Map<String, dynamic> json) => ProgramDay(
         id: json['id'] as String,
         name: json['name'] as String,
         position: json['position'] as int? ?? 0,
         isRestDay: json['is_rest_day'] as bool? ?? false,
+        nameAr: json['name_ar'] as String?,
         weekday: json['weekday'] as int?,
         notes: json['notes'] as String?,
         exercises: ((json['exercises'] as List<dynamic>?) ?? const <dynamic>[])
@@ -128,6 +135,7 @@ class ProgramDay {
         'name': name,
         'position': position,
         'is_rest_day': isRestDay,
+        'name_ar': nameAr,
         'weekday': weekday,
         'notes': notes,
         'exercises': exercises.map((DayExercise e) => e.toJson()).toList(),
@@ -141,6 +149,8 @@ class Program {
     required this.status,
     required this.isTemplate,
     required this.daysPerWeek,
+    this.nameAr,
+    this.descriptionAr,
     this.description,
     this.goal,
     this.difficulty,
@@ -159,6 +169,8 @@ class Program {
   final String status;
   final bool isTemplate;
   final int daysPerWeek;
+  final String? nameAr;
+  final String? descriptionAr;
   final String? description;
   final String? goal;
   final String? difficulty;
@@ -171,6 +183,16 @@ class Program {
   final int exerciseCount;
   final List<ProgramDay> days;
 
+  /// Prefer the Arabic name when the UI is in Arabic and one exists.
+  String displayName(String languageCode) =>
+      languageCode == 'ar' && (nameAr?.isNotEmpty ?? false) ? nameAr! : name;
+
+  /// Prefer the Arabic description when the UI is in Arabic and one exists.
+  String? displayDescription(String languageCode) =>
+      languageCode == 'ar' && (descriptionAr?.isNotEmpty ?? false)
+          ? descriptionAr
+          : description;
+
   bool get isActive => status == 'active';
 
   List<ProgramDay> get trainingDays =>
@@ -182,6 +204,8 @@ class Program {
         status: json['status'] as String? ?? 'draft',
         isTemplate: json['is_template'] as bool? ?? false,
         daysPerWeek: json['days_per_week'] as int? ?? 3,
+        nameAr: json['name_ar'] as String?,
+        descriptionAr: json['description_ar'] as String?,
         description: json['description'] as String?,
         goal: json['goal'] as String?,
         difficulty: json['difficulty'] as String?,
@@ -207,6 +231,8 @@ class Program {
         'status': status,
         'is_template': isTemplate,
         'days_per_week': daysPerWeek,
+        'name_ar': nameAr,
+        'description_ar': descriptionAr,
         'description': description,
         'goal': goal,
         'difficulty': difficulty,

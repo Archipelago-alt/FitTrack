@@ -9,6 +9,7 @@ class Goal {
     required this.startDate,
     required this.status,
     required this.progressPercent,
+    this.titleAr,
     this.description,
     this.exerciseId,
     this.exerciseName,
@@ -29,6 +30,7 @@ class Goal {
   final DateTime startDate;
   final String status;
   final double progressPercent;
+  final String? titleAr;
   final String? description;
   final String? exerciseId;
   final String? exerciseName;
@@ -38,6 +40,10 @@ class Goal {
   final DateTime? targetDate;
   final DateTime? achievedAt;
   final int? daysRemaining;
+
+  /// Prefer the Arabic title when the UI is in Arabic and one exists.
+  String displayTitle(String languageCode) =>
+      languageCode == 'ar' && (titleAr?.isNotEmpty ?? false) ? titleAr! : title;
 
   bool get isAchieved => status == 'achieved';
 
@@ -55,6 +61,7 @@ class Goal {
         startDate: DateTime.parse(json['start_date'] as String),
         status: json['status'] as String? ?? 'active',
         progressPercent: (json['progress_percent'] as num?)?.toDouble() ?? 0,
+        titleAr: json['title_ar'] as String?,
         description: json['description'] as String?,
         exerciseId: json['exercise_id'] as String?,
         exerciseName: json['exercise_name'] as String?,
@@ -80,6 +87,7 @@ class Goal {
         'start_date': startDate.toIso8601String().split('T').first,
         'status': status,
         'progress_percent': progressPercent,
+        'title_ar': titleAr,
         'description': description,
         'exercise_id': exerciseId,
         'exercise_name': exerciseName,

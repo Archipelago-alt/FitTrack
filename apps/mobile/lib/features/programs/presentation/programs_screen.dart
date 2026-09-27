@@ -129,6 +129,7 @@ class _ProgramCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = context.l10n;
     final ThemeData theme = Theme.of(context);
+    final String languageCode = Localizations.localeOf(context).languageCode;
 
     return FitCard(
       onTap: () => context.pushNamed(
@@ -143,7 +144,8 @@ class _ProgramCard extends ConsumerWidget {
           Row(
             children: <Widget>[
               Expanded(
-                child: Text(program.name, style: theme.textTheme.titleMedium),
+                child: Text(program.displayName(languageCode),
+                    style: theme.textTheme.titleMedium),
               ),
               if (program.isActive && !isTemplate)
                 Container(
@@ -173,10 +175,10 @@ class _ProgramCard extends ConsumerWidget {
                 ),
             ],
           ),
-          if (program.description != null) ...<Widget>[
+          if (program.displayDescription(languageCode) != null) ...<Widget>[
             const SizedBox(height: AppSpacing.xs),
             Text(
-              program.description!,
+              program.displayDescription(languageCode)!,
               style: theme.textTheme.bodySmall,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -191,7 +193,9 @@ class _ProgramCard extends ConsumerWidget {
                         'count': program.dayCount
                       })}'
                   ' · ${program.exerciseCount} ${l10n.t('exercisesTitle').toLowerCase()}'
-                  '${program.estimatedMinutes != null ? ' · ~${program.estimatedMinutes} min' : ''}',
+                  '${program.estimatedMinutes != null ? ' · ~${l10n.t('minutesShort', <String, Object?>{
+                          'count': program.estimatedMinutes
+                        })}' : ''}',
                   style: theme.textTheme.labelSmall,
                 ),
               ),
@@ -220,7 +224,10 @@ class _ProgramCard extends ConsumerWidget {
       invalidatePrograms(ref);
       if (context.mounted) {
         AppToast.success(
-            context, '${copy.name} · ${context.l10n.t('programsActive')}');
+          context,
+          '${copy.displayName(Localizations.localeOf(context).languageCode)}'
+          ' · ${context.l10n.t('programsActive')}',
+        );
       }
     } on Object {
       if (context.mounted) {

@@ -498,6 +498,110 @@ void main() {
     expect(await getList('/api/v1/goals'), isNotEmpty);
   });
 
+  group('in Arabic', () {
+    late Dio arabic;
+
+    setUp(() {
+      arabic = Dio(BaseOptions(
+        baseUrl: 'http://demo.local',
+        validateStatus: (int? s) => s != null && s < 500,
+      ))
+        ..httpClientAdapter = DemoApiAdapter(store, localeCode: () => 'ar');
+    });
+
+    /// Matches any string containing Arabic script.
+    final Matcher isArabic = matches(RegExp(r'[\u0600-\u06FF]'));
+
+    test('a generated plan is named and described in Arabic', () async {
+      final Response<dynamic> r = await arabic.post<dynamic>(
+          '/api/v1/ai/plans/generate',
+          data: <String, dynamic>{'days_per_week': 3, 'goal': 'gain_muscle'});
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      final Map<String, dynamic> plan =
+          Map<String, dynamic>.from(body['plan'] as Map<dynamic, dynamic>);
+      expect('${plan['name']}', isArabic);
+      expect('${plan['description']}', isArabic);
+      for (final dynamic day in plan['days'] as List<dynamic>) {
+        final Map<String, dynamic> d =
+            Map<String, dynamic>.from(day as Map<dynamic, dynamic>);
+        expect('${d['name']}', isArabic, reason: 'day name left in English');
+      }
+      expect('${body['disclaimer']}', isArabic);
+    });
+
+    test('coach summaries and substitutions answer in Arabic', () async {
+      final Response<dynamic> summary =
+          await arabic.post<dynamic>('/api/v1/ai/progress-summary');
+      expect(
+        '${Map<String, dynamic>.from(summary.data as Map<dynamic, dynamic>)['summary']}',
+        isArabic,
+      );
+      // Substitutions name a real exercise, so pick one from the library.
+      final List<dynamic> exercises = await getList('/api/v1/exercises');
+      final String id = Map<String, dynamic>.from(
+          exercises.first as Map<dynamic, dynamic>)['id'] as String;
+      final Response<dynamic> subs = await arabic.post<dynamic>(
+          '/api/v1/ai/substitutions',
+          data: <String, dynamic>{'exercise_id': id});
+      final List<dynamic> list = Map<String, dynamic>.from(
+          subs.data as Map<dynamic, dynamic>)['substitutions'] as List<dynamic>;
+      expect(list, isNotEmpty);
+      for (final dynamic item in list) {
+        final Map<String, dynamic> s =
+            Map<String, dynamic>.from(item as Map<dynamic, dynamic>);
+        expect('${s['name']}', isArabic);
+        expect('${s['reason']}', isArabic);
+      }
+    });
+
+    test('the training summary is recomputed in Arabic', () async {
+      final Response<dynamic> r =
+          await arabic.get<dynamic>('/api/v1/progress/overview');
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      expect('${body['summary']}', isArabic);
+    });
+
+    test("the dashboard's today card carries both languages", () async {
+      final Response<dynamic> r =
+          await arabic.get<dynamic>('/api/v1/progress/dashboard');
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      final Map<String, dynamic> today = Map<String, dynamic>.from(
+          body['today_workout'] as Map<dynamic, dynamic>);
+      expect('${today['day_name_ar']}', isArabic);
+      expect('${today['program_name_ar']}', isArabic);
+      expect('${today['day_name']}', isNot(isArabic));
+    });
+
+    test('a duplicated program is marked as a copy in Arabic', () async {
+      final List<dynamic> templates =
+          await getList('/api/v1/programs', <String, dynamic>{
+        'templates': 'true',
+      });
+      final String id = Map<String, dynamic>.from(
+          templates.first as Map<dynamic, dynamic>)['id'] as String;
+      final Response<dynamic> r =
+          await arabic.post<dynamic>('/api/v1/programs/$id/duplicate');
+      final Map<String, dynamic> copy =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      expect('${copy['name']}', contains('نسخة'));
+      expect('${copy['name']}', isArabic);
+    });
+
+    test('an unavailable feature explains itself in Arabic', () async {
+      final Response<dynamic> r =
+          await arabic.get<dynamic>('/api/v1/nutrition/foods/barcode/12345');
+      expect(r.statusCode, 404);
+      final Map<String, dynamic> body =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      final Map<String, dynamic> error =
+          Map<String, dynamic>.from(body['error'] as Map<dynamic, dynamic>);
+      expect('${error['message']}', isArabic);
+    });
+  });
+
   test('unimplemented endpoints fail cleanly rather than crashing', () async {
     final Response<dynamic> r =
         await dio.get<dynamic>('/api/v1/nutrition/foods/barcode/12345');
