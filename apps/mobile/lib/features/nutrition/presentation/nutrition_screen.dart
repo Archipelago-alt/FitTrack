@@ -241,6 +241,7 @@ class _MealSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
+    final String languageCode = Localizations.localeOf(context).languageCode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +272,7 @@ class _MealSection extends ConsumerWidget {
                     .map(
                       (MealItem item) => ListTile(
                         dense: true,
-                        title: Text(item.foodName),
+                        title: Text(item.displayFoodName(languageCode)),
                         subtitle: Text(
                           '${item.grams.round()} g · '
                           'P ${item.proteinG.round()} · '

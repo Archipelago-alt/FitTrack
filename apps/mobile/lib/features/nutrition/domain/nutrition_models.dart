@@ -123,6 +123,7 @@ class MealItem {
     required this.fatG,
     required this.fiberG,
     this.foodId,
+    this.foodNameAr,
     this.servingLabel,
     this.quantity = 1,
     this.position = 0,
@@ -137,9 +138,16 @@ class MealItem {
   final double fatG;
   final double fiberG;
   final String? foodId;
+  final String? foodNameAr;
   final String? servingLabel;
   final double quantity;
   final int position;
+
+  /// Prefer the Arabic food name when the UI is in Arabic and one exists.
+  String displayFoodName(String languageCode) =>
+      languageCode == 'ar' && (foodNameAr?.isNotEmpty ?? false)
+          ? foodNameAr!
+          : foodName;
 
   factory MealItem.fromJson(Map<String, dynamic> json) => MealItem(
         id: json['id'] as String? ?? '',
@@ -151,6 +159,7 @@ class MealItem {
         fatG: (json['fat_g'] as num?)?.toDouble() ?? 0,
         fiberG: (json['fiber_g'] as num?)?.toDouble() ?? 0,
         foodId: json['food_id'] as String?,
+        foodNameAr: json['food_name_ar'] as String?,
         servingLabel: json['serving_label'] as String?,
         quantity: (json['quantity'] as num?)?.toDouble() ?? 1,
         position: json['position'] as int? ?? 0,
@@ -160,6 +169,7 @@ class MealItem {
         'id': id,
         'food_id': foodId,
         'food_name': foodName,
+        'food_name_ar': foodNameAr,
         'serving_label': servingLabel,
         'quantity': quantity,
         'grams': grams,

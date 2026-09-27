@@ -87,6 +87,11 @@ What is translated, and where it comes from:
 | Chart series and summaries | recomputed per request | "حجم التدريب", and the training summary sentence is generated in the reader's language. |
 | FitCoach replies, generated plans, refusals | demo adapter | Canned replies, the injury redirect, generated plan and day names, and every "not available offline" message exist in both languages. |
 
+Switching language takes effect immediately, including on data already
+stored: a workout started from a programme day and a logged meal each keep
+both names, so old entries relabel rather than freezing in the language they
+were created in.
+
 Deliberately not translated: numbers and dates use the locale's own
 formatting but Latin digits, and anything the user typed themselves (a
 programme they renamed, a custom food, a note) stays exactly as they typed it

@@ -12,13 +12,22 @@ import 'demo_store.dart';
 /// logged meal move the calorie ring, instead of the screens continuing to
 /// show whatever the capture happened to contain.
 class DemoAnalytics {
-  const DemoAnalytics(this._store, {this.isArabic = false});
+  const DemoAnalytics(this._store, {bool Function()? isArabic})
+      : _isArabic = isArabic ?? _notArabic;
 
   final DemoStore _store;
 
-  /// Meal items carry a denormalised food name, so it has to be stored in the
-  /// language the reader will see it in.
-  final bool isArabic;
+  /// Asked on every use rather than captured once: the user can switch
+  /// language while the app is running, and the adapter that owns this is not
+  /// rebuilt when they do.
+  final bool Function() _isArabic;
+
+  static bool _notArabic() => false;
+
+  /// Meal items carry a denormalised food name, and generated summaries are
+  /// sentences, so both have to be produced in the language the reader has
+  /// selected right now.
+  bool get isArabic => _isArabic();
 
   // --- shared helpers ------------------------------------------------------
 
@@ -334,8 +343,10 @@ class DemoAnalytics {
         'id':
             '${item['id'] ?? 'demo-item-$i-${DateTime.now().microsecondsSinceEpoch}'}',
         'food_id': foodId,
-        'food_name':
-            '${item['food_name'] ?? (isArabic ? (food['name_ar'] ?? food['name']) : food['name']) ?? 'Food'}',
+        // Both languages are stored, so a meal logged in one language reads
+        // correctly after the user switches to the other.
+        'food_name': '${item['food_name'] ?? food['name'] ?? 'Food'}',
+        'food_name_ar': item['food_name_ar'] ?? food['name_ar'],
         'grams': grams,
         // An item that already carries its own macros keeps them; otherwise
         // they come from the food, scaled to the portion.

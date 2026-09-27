@@ -24,7 +24,10 @@ class DemoApiAdapter implements HttpClientAdapter {
       : _localeCode = localeCode ?? _defaultLocale,
         _derived = DemoAnalytics(
           _store,
-          isArabic:
+          // Evaluated per call, not captured: switching language in Settings
+          // does not rebuild this adapter, and a stale language here would
+          // keep generating summaries and meal names in the old one.
+          isArabic: () =>
               (localeCode ?? _defaultLocale)().toLowerCase().startsWith('ar'),
         );
 

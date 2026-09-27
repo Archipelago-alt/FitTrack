@@ -575,6 +575,55 @@ void main() {
       expect('${today['day_name']}', isNot(isArabic));
     });
 
+    test('a logged meal keeps both food names', () async {
+      final List<dynamic> foods = await getList('/api/v1/nutrition/foods');
+      final Map<String, dynamic> food =
+          Map<String, dynamic>.from(foods.first as Map<dynamic, dynamic>);
+      final Response<dynamic> r = await arabic.post<dynamic>(
+        '/api/v1/nutrition/meals',
+        data: <String, dynamic>{
+          'logged_on': DateTime.now().toIso8601String().split('T').first,
+          'meal_type': 'lunch',
+          'items': <Map<String, dynamic>>[
+            <String, dynamic>{'food_id': food['id'], 'grams': 120},
+          ],
+        },
+      );
+      final Map<String, dynamic> meal =
+          Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>);
+      final MealItem item = MealItem.fromJson(Map<String, dynamic>.from(
+          (meal['items'] as List<dynamic>).first as Map<dynamic, dynamic>));
+      // Stored in both languages, so switching language relabels the entry
+      // instead of freezing it in whichever one it was logged in.
+      expect(item.foodName, food['name']);
+      expect(item.foodNameAr, food['name_ar']);
+      expect(item.displayFoodName('ar'), isArabic);
+      expect(item.displayFoodName('en'), isNot(isArabic));
+    });
+
+    test('switching language mid-session changes what is generated', () async {
+      // The adapter is not rebuilt when the user changes language in Settings,
+      // so the language has to be read per request rather than captured once.
+      String code = 'en';
+      final Dio switching = Dio(BaseOptions(
+        baseUrl: 'http://demo.local',
+        validateStatus: (int? s) => s != null && s < 500,
+      ))
+        ..httpClientAdapter = DemoApiAdapter(store, localeCode: () => code);
+
+      Future<String> summary() async {
+        final Response<dynamic> r =
+            await switching.get<dynamic>('/api/v1/progress/overview');
+        return '${Map<String, dynamic>.from(r.data as Map<dynamic, dynamic>)['summary']}';
+      }
+
+      expect(await summary(), isNot(isArabic));
+      code = 'ar';
+      expect(await summary(), isArabic);
+      code = 'en';
+      expect(await summary(), isNot(isArabic));
+    });
+
     test('a duplicated program is marked as a copy in Arabic', () async {
       final List<dynamic> templates =
           await getList('/api/v1/programs', <String, dynamic>{
